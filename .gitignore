@@ -1,5 +1,6 @@
 .env
 .idea/
+.playwright-cli/
 config.json
 data/
 data-*/

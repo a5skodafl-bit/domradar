@@ -113,6 +113,16 @@ def assess(listing, config):
         if listing.geo_accuracy != 'exact' and not config.get('allow_approximate_geo', False): missing.append('lokalizacja przybliżona lub o nieznanej dokładności')
         elif any(x['within'] for x in distances) and not any(x['km'] + x['uncertainty_km'] <= x['limit_km'] for x in distances): missing.append('obszar niepewności przekracza promień')
     text = fold(listing.title + ' ' + listing.description)
+    # The portal can label a garden plot, a house kit, or a fractional share as a house.
+    # Keep these searchable, but do not present them as confirmed purchases of a house.
+    if re.search(r'\brod\b|rodzinn.{0,20}ogrod.{0,15}dzialkow|dzialk.{0,15}rekreacyjn', text):
+        missing.append('ogród działkowy lub działka rekreacyjna — sprawdź prawo do nieruchomości')
+    if re.search(r'\bdom(?:y|ow|ki|ek)? modulow|\bdom(?:y|ow|ki|ek)? mobiln|na (?:wlasnej )?dzialce klienta|sprzedaz gotowych domkow|gotow.{0,20}do przeniesienia|konstrukcj.{0,30}do samodzielnego montazu', text):
+        missing.append('oferta budynku bez potwierdzonej działki')
+    if re.search(r'udzial(?:u)?\s+(?:\d+/\d+|w wysokosci\s+\d+/\d+|w nieruchomosci|w prawie)', text):
+        missing.append('sprzedaż udziału — sprawdź zakres własności')
+    if re.search(r'\bdo zamiany\b|\boferujemy do zamiany\b', text):
+        missing.append('oferta zamiany — sprawdź warunki sprzedaży')
     for term in config.get('exclude_keywords', []):
         if fold(term) in text: rejected.append('wykluczone słowo: ' + term)
     missing = sorted(set(missing))

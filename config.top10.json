@@ -72,7 +72,7 @@
   "pages_per_search": 1,
   "max_details_per_search": 35,
   "notify_initial": false,
-  "allow_approximate_geo": true,
+  "allow_approximate_geo": false,
   "exclude_keywords": [],
   "sources": [
     {
@@ -93,16 +93,16 @@
       "id": "morizon",
       "enabled": true,
       "search_urls": [
-        "https://www.morizon.pl/domy/warszawa/",
-        "https://www.morizon.pl/domy/krakow/",
-        "https://www.morizon.pl/domy/wroclaw/",
-        "https://www.morizon.pl/domy/lodz/",
-        "https://www.morizon.pl/domy/poznan/",
-        "https://www.morizon.pl/domy/gdansk/",
-        "https://www.morizon.pl/domy/szczecin/",
-        "https://www.morizon.pl/domy/lublin/",
-        "https://www.morizon.pl/domy/bydgoszcz/",
-        "https://www.morizon.pl/domy/bialystok/"
+        "https://www.morizon.pl/domy/warszawa/?ps%5Bprice_to%5D=300000",
+        "https://www.morizon.pl/domy/krakow/?ps%5Bprice_to%5D=300000",
+        "https://www.morizon.pl/domy/wroclaw/?ps%5Bprice_to%5D=300000",
+        "https://www.morizon.pl/domy/lodz/?ps%5Bprice_to%5D=300000",
+        "https://www.morizon.pl/domy/poznan/?ps%5Bprice_to%5D=300000",
+        "https://www.morizon.pl/domy/gdansk/?ps%5Bprice_to%5D=300000",
+        "https://www.morizon.pl/domy/szczecin/?ps%5Bprice_to%5D=300000",
+        "https://www.morizon.pl/domy/lublin/?ps%5Bprice_to%5D=300000",
+        "https://www.morizon.pl/domy/bydgoszcz/?ps%5Bprice_to%5D=300000",
+        "https://www.morizon.pl/domy/bialystok/?ps%5Bprice_to%5D=300000"
       ]
     },
     {

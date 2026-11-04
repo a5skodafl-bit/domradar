@@ -51,7 +51,7 @@ def render(db, path, include_analysis=False, config=None):
           <p>{_escape(item.get('location') or 'Brak lokalizacji')} · {_escape(distance)} · {_escape(_number(item.get('area_m2'), ' m²'))}</p>
           <p class="meta">Widziane: {_escape(time.strftime('%Y-%m-%d %H:%M UTC', time.gmtime(last_seen)))} · Lokalizacja: {_escape(item.get('geo_accuracy'))}</p>
           {f'<p class="note">{_escape(note)}</p>' if note else ''}{extra}
-          <details><summary>Opis i szczegóły</summary><p class="description">{_escape(item.get('description') or 'Brak opisu')}</p>
+          <details><summary>Fragment opisu</summary><p class="description">{_escape((item.get('description') or 'Brak opisu')[:350])}</p>
           <p class="meta">Pierwszy raz w bazie: {_escape(time.strftime('%Y-%m-%d %H:%M UTC', time.gmtime(first_seen)))}</p></details>
         </article>''')
 

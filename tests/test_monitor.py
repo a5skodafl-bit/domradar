@@ -32,6 +32,10 @@ class CoreTests(unittest.TestCase):
         r=assess(listing(lat=50.06,lon=19.94),c)
         self.assertEqual(r['status'],'match');self.assertEqual(r['nearest']['city'],'Kraków')
     def test_over_budget(self):self.assertEqual(assess(listing(price=1100000),config())['status'],'rejected')
+    def test_garden_plot_and_fractional_share_require_review(self):
+        self.assertEqual(assess(listing(description='Dom na działce ROD.'),config())['status'],'review')
+        self.assertEqual(assess(listing(description='Syndyk sprzedaje udział 1/24 w nieruchomości.'),config())['status'],'review')
+        self.assertEqual(assess(listing(description='Sprzedaż gotowych domów mobilnych.'),config())['status'],'review')
     def test_unknown_currency(self):self.assertEqual(assess(listing(currency=''),config())['status'],'review')
     def test_missing_geo(self):self.assertEqual(assess(listing(lat=None),config())['status'],'review')
     def test_unknown_geo_default(self):self.assertEqual(assess(listing(geo_accuracy='unknown'),config())['status'],'review')
