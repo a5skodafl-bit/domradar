@@ -28,6 +28,20 @@ class Client:
                 if not allowed(newurl,source):raise ValueError('Przekierowanie poza portal: '+newurl)
                 return super().redirect_request(req,fp,code,msg,headers,newurl)
         try:
+            if source == 'olx':
+                # OLX rejects the standard urllib TLS fingerprint with HTTP 403.
+                # Scrapling's HTTP fetcher impersonates Chrome without launching a browser.
+                try:
+                    from scrapling.fetchers import Fetcher
+                except ImportError as exc:
+                    raise RuntimeError('OLX wymaga zależności: pip install "scrapling[fetchers]"') from exc
+                response=Fetcher.get(url,impersonate='chrome',stealthy_headers=True,timeout=self.timeout)
+                final_url=str(response.url)
+                if not allowed(final_url,source):raise ValueError('Przekierowanie poza portal')
+                if int(response.status)>=400:raise RuntimeError('OLX HTTP '+str(response.status))
+                raw=response.body
+                if len(raw)>12_000_000:raise ValueError('Strona przekracza limit 12 MB')
+                return raw.decode(getattr(response,'encoding',None) or 'utf-8',errors='replace')
             req=urllib.request.Request(url,headers={'User-Agent':'DomRadar/0.1 (personal real-estate monitor)','Accept-Language':'pl-PL,pl;q=0.9'})
             with urllib.request.build_opener(Redirect()).open(req,timeout=self.timeout) as r:
                 if not allowed(r.url,source):raise ValueError('Przekierowanie poza portal')
@@ -105,6 +119,17 @@ def store_listing(db,listing,cfg,notify):
         for channel in channels(cfg):db.execute('INSERT OR IGNORE INTO outbox(key,channel,body,created) VALUES(?,?,?,?)',(listing.key,channel,body_for(listing,result,cfg.get("include_analysis",False)),now))
     db.commit()
     return result
+
+
+def reassess_all(db,cfg):
+    """Apply current filters to historical rows without requiring a fresh portal hit."""
+    updates=[]
+    for key,payload in db.execute('SELECT key,payload FROM listings'):
+        listing=Listing(**json.loads(payload))
+        updates.append((json.dumps(assess(listing,cfg),ensure_ascii=False),key))
+    db.executemany('UPDATE listings SET assessment=? WHERE key=?',updates)
+    db.commit()
+    return len(updates)
 
 
 def scan(db,cfg,client=None):

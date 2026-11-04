@@ -82,7 +82,8 @@ def image_url(value, base):
             if result:return result
         return ''
     if isinstance(value,dict):
-        value=value.get('contentUrl') or value.get('url') or value.get('@id') or ''
+        value=(value.get('contentUrl') or value.get('url') or value.get('@id') or
+               value.get('large') or value.get('medium') or value.get('small') or value.get('thumbnail') or '')
     if not isinstance(value,str) or not value.strip():return ''
     result=urljoin(base,value.strip());parsed=urlsplit(result)
     if parsed.scheme!='https' or not parsed.hostname or parsed.username or parsed.password or parsed.port not in {None,443}:return ''
@@ -127,9 +128,12 @@ def parse_otodom(page, url, source):
         ad=((data.get('props') or {}).get('pageProps') or {}).get('ad')
         if not isinstance(ad,dict):continue
         target=ad.get('target') or {}; loc=ad.get('location') or {}
+        characteristics={str(x.get('key')):x for x in ad.get('characteristics') or [] if isinstance(x,dict)}
         def t(k):
             v=target.get(k);return v[0] if isinstance(v,list) and v else v
-        price=ad.get('totalPrice') or {};estate=ad.get('estate') or t('Type') or t('Estate');transaction=ad.get('transaction') or t('Offer_type') or t('Transaction')
+        price=ad.get('totalPrice') or {};category=ad.get('adCategory') or {}
+        estate=ad.get('estate') or category.get('name') or t('ProperType') or t('Type') or t('Estate')
+        transaction=ad.get('transaction') or category.get('type') or t('OfferType') or t('Offer_type') or t('Transaction')
         kind,tx=classify(ad.get('title',''),url)
         if str(estate).upper() in {'HOUSE','HOUSES','DOM'}:kind='house'
         elif str(estate).upper() in {'FLAT','APARTMENT','MIESZKANIE'}:kind='flat'
@@ -140,8 +144,9 @@ def parse_otodom(page, url, source):
         radius=number(geo.get('radius') if 'radius' in geo else (loc.get('mapDetails') or {}).get('radius',loc.get('radius')))
         address=loc.get('address') or {}
         names=[v.get('name','') if isinstance(v,dict) else str(v or '') for v in address.values()]
-        photo=image_url(ad.get('images') or ad.get('image') or ad.get('photos'),url)
-        listing=Listing(source,url,clean(ad.get('title')),number(price.get('value') if isinstance(price,dict) else price) or number(t('Price')),str(price.get('currency','') if isinstance(price,dict) else ''),number(ad.get('areaInSquareMeters')) or number(t('Area')),number(geo.get('latitude')),number(geo.get('longitude')),', '.join(x for x in names if x),'approximate' if radius else 'unknown',radius,kind,tx,clean(ad.get('description')),str(ad.get('dateCreated') or ''),str(t('Build_condition') or ''),'Otodom __NEXT_DATA__.props.pageProps.ad',photo)
+        photo=image_url(ad.get('images') or ad.get('listingImages') or ad.get('image') or ad.get('photos'),url)
+        price_attr=characteristics.get('price') or {}
+        listing=Listing(source,url,clean(ad.get('title')),number(price.get('value') if isinstance(price,dict) else price) or number(t('Price')) or number(price_attr.get('value')),str(price.get('currency','') if isinstance(price,dict) else '') or str(price_attr.get('currency') or ''),number(ad.get('areaInSquareMeters')) or number(t('Area')) or number((characteristics.get('m') or {}).get('value')),number(geo.get('latitude')),number(geo.get('longitude')),', '.join(x for x in names if x),'approximate' if radius else 'unknown',radius,kind,tx,clean(ad.get('description')),str(ad.get('dateCreated') or ad.get('createdAt') or ''),str(t('Build_condition') or t('Construction_status') or ''),'Otodom __NEXT_DATA__.props.pageProps.ad',photo)
         # Currency must be explicitly stated, not inferred from country/domain.
         if not listing.currency:listing.currency=str(t('Currency') or '')
         return listing

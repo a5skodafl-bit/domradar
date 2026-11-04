@@ -6,7 +6,7 @@ import os
 import time
 from pathlib import Path
 from .core import Listing
-from .engine import load_config,connect,scan,deliver,report,store_listing
+from .engine import load_config,connect,scan,deliver,report,store_listing,reassess_all
 
 
 def main():
@@ -43,7 +43,7 @@ def main():
             samples=[Listing('demo','https://example.org/dom-1','PRZYKŁAD — dom pod Warszawą',850000,'PLN',140,52.28,20.9,'Przykładowa lokalizacja','exact',0,'house','sale','Dom gotowy do zamieszkania. Możliwość zakupu na kredyt — deklaracja sprzedającego.'),Listing('demo','https://example.org/dom-2','PRZYKŁAD — dom z brakującą lokalizacją',700000,'PLN',100,property_type='house',transaction='sale',description='Dom do remontu. Tylko gotówka.')]
             for x in samples:store_listing(db,x,demo_cfg,False)
             report(db,root/'demo.html',config=demo_cfg);print((root/'demo.html').resolve());return
-        if args.command=='report':report(db,root/'raport.html',cfg.get('include_analysis',False),cfg);print((root/'raport.html').resolve());return
+        if args.command=='report':reassess_all(db,cfg);report(db,root/'raport.html',cfg.get('include_analysis',False),cfg);print((root/'raport.html').resolve());return
         if args.command=='export':
             rows=[{'listing':json.loads(x),'assessment':json.loads(y)} for x,y in db.execute('SELECT payload,assessment FROM listings')]
             target=root/'oferty.json';target.write_text(json.dumps(rows,ensure_ascii=False,indent=2),encoding='utf-8');print(target.resolve());return
@@ -54,6 +54,7 @@ def main():
         try:
             while True:
                 scan(db,cfg)
+                reassess_all(db,cfg)
                 if args.send:deliver(db,cfg)
                 report(db,root/'raport.html',cfg.get('include_analysis',False),cfg)
                 print('Raport: '+str((root/'raport.html').resolve()),flush=True)

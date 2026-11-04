@@ -12,7 +12,7 @@ Przegląd: 4 listopada 2026. Kod pobrano z GitHub, a wybrane moduły odczytano l
 
 ## Decyzja
 
-Nowy projekt w Pythonie, wyłącznie standardowa biblioteka, własna implementacja MIT. Użyto publicznie widocznych formatów danych, a nie kodu repozytoriów. Z tych projektów przyjęto pomysły architektoniczne: rozdzielone parsery, przechowywanie historii, pamięć ofert i powiadomienia.
+Nowy projekt w Pythonie, z własną implementacją MIT. Rdzeń korzysta ze standardowej biblioteki, a lekki Fetcher Scrapling obsługuje transport HTTP publicznych stron OLX. Użyto publicznie widocznych formatów danych, a nie kodu repozytoriów. Z tych projektów przyjęto pomysły architektoniczne: rozdzielone parsery, przechowywanie historii, pamięć ofert i powiadomienia.
 
 Prawdziwe testy pokazały, że dla Morizon i Gratki potrzeba dekodowania Nuxt/devalue, a OLX ma dane ogłoszenia w `__PRERENDERED_STATE__`. Sam parser JSON-LD nie wystarczał: np. mógł nie dostać współrzędnych albo pomylić metraż działki z metrażem domu. Nowe adaptery identyfikują główny rekord po URL lub identyfikatorze i czytają osobno pole powierzchni domu.
 
@@ -20,11 +20,10 @@ Nie wykorzystano AI w pierwszej wersji. Wybrane wzmianki o stanie i kredycie wyk
 
 ## Czego nie można uznać za zakończone
 
-- Potwierdzenie działania Otodom na żywo: żądanie kończyło się HTTP 403.
-- Pełne pokrycie i wielostronicowe wyszukiwanie na 10 portalach: test próbki tego nie dowodzi.
+- Pełne pokrycie i wielostronicowe wyszukiwanie na ośmiu aktywnych portalach: test próbki tego nie dowodzi.
 - Automatyczne budowanie poprawnych lokalnych wyszukiwań na wszystkich portalach.
 - Pewne scalanie duplikatów między portalami, a nie tylko identycznych URL.
 - Test dostarczenia na prawdziwe konto Telegram/SMTP: użytkownik nie podał konfiguracji.
-- Stałe wdrożenie: przygotowano uruchomienie lokalne i Docker, ale nie aktywowano usługi.
+- Powiadomienia na prawdziwe konto nadal wymagają sekretów użytkownika; publiczna baza jest stale odświeżana przez GitHub Actions i publikowana przez GitHub Pages.
 
-Te ograniczenia są jawne w README i nie są ukryte za deklaracją „obsługuje 10 portali”.
+Te ograniczenia są jawne w README i nie są ukryte za deklaracją pełnego pokrycia rynku.

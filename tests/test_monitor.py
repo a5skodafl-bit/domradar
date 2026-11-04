@@ -5,7 +5,7 @@ import unittest
 from pathlib import Path
 from domradar.core import Listing, assess, distance, analyze_text, canonical
 from domradar.parsers import parse_detail, search_links, allowed, unflatten_nuxt
-from domradar.engine import connect, store_listing, deliver, scan, report, load_config
+from domradar.engine import connect, store_listing, deliver, scan, report, load_config, reassess_all
 
 ROOT=Path(__file__).resolve().parents[1]
 
@@ -32,8 +32,10 @@ class CoreTests(unittest.TestCase):
         r=assess(listing(lat=50.06,lon=19.94),c)
         self.assertEqual(r['status'],'match');self.assertEqual(r['nearest']['city'],'Kraków')
     def test_over_budget(self):self.assertEqual(assess(listing(price=1100000),config())['status'],'rejected')
-    def test_garden_plot_and_fractional_share_require_review(self):
-        self.assertEqual(assess(listing(description='Dom na działce ROD.'),config())['status'],'review')
+    def test_garden_plot_rejected_and_other_risks_require_review(self):
+        self.assertEqual(assess(listing(description='Dom na działce ROD.'),config())['status'],'rejected')
+        self.assertEqual(assess(listing(description='Dom całoroczny na działce R. O. D.'),config())['status'],'rejected')
+        self.assertEqual(assess(listing(description='Dom na działce rekreacyjnej.'),config())['status'],'review')
         self.assertEqual(assess(listing(description='Syndyk sprzedaje udział 1/24 w nieruchomości.'),config())['status'],'review')
         self.assertEqual(assess(listing(description='Sprzedaż gotowych domów mobilnych.'),config())['status'],'review')
     def test_unknown_currency(self):self.assertEqual(assess(listing(currency=''),config())['status'],'review')
@@ -72,6 +74,11 @@ class ParserTests(unittest.TestCase):
         d={'props':{'pageProps':{'ad':{'title':'Dom na sprzedaż','estate':'HOUSE','transaction':'SELL','totalPrice':{'value':850000,'currency':'PLN'},'areaInSquareMeters':130,'location':{'coordinates':{'latitude':52.25,'longitude':21.02},'mapDetails':{'radius':500}},'description':'Dom'}}},'recommendation':{'latitude':1,'longitude':1}}
         x=parse_detail('<script id="__NEXT_DATA__">'+json.dumps(d)+'</script>','https://www.otodom.pl/pl/oferta/dom-IDabc','otodom')
         self.assertEqual(x.lat,52.25);self.assertEqual(x.geo_radius_m,500)
+    def test_otodom_current_shape(self):
+        d={'props':{'pageProps':{'ad':{'title':'Dom na sprzedaż','adCategory':{'name':'HOUSE','type':'SELL'},'target':{'Price':299000,'Area':'70'},'characteristics':[{'key':'price','value':'299000','currency':'PLN'},{'key':'m','value':'70'}],'images':[{'medium':'https://img.example.org/otodom.jpg'}],'location':{'coordinates':{'latitude':52.25,'longitude':21.02}},'description':'Dom','createdAt':'2026-11-04'}}}}
+        x=parse_detail('<script id="__NEXT_DATA__">'+json.dumps(d)+'</script>','https://www.otodom.pl/pl/oferta/dom-IDnew','otodom')
+        self.assertEqual((x.price,x.currency,x.area_m2,x.property_type,x.transaction),(299000,'PLN',70,'house','sale'))
+        self.assertEqual(x.image_url,'https://img.example.org/otodom.jpg')
     def test_olx_surface_not_plot(self):
         d={'ad':{'id':'123','map':{'lat':52.25,'lon':21.02,'radius':1},'params':[{'key':'m','normalizedValue':'140'},{'key':'area','normalizedValue':'4900'}]}}
         product={'@type':'Product','sku':'123','name':'Siedlisko 4900 m², dom','url':'https://olx.pl/d/oferta/x','category':'https://www.olx.pl/nieruchomosci/domy/sprzedaz/','offers':{'price':850000,'priceCurrency':'PLN'}}
@@ -87,6 +94,14 @@ class EngineTests(unittest.TestCase):
     def test_history(self):
         store_listing(self.db,listing(),self.cfg,False);store_listing(self.db,listing(price=800000),self.cfg,False)
         self.assertEqual(self.db.execute('SELECT COUNT(*) FROM history').fetchone()[0],2)
+    def test_reassess_historical_rows(self):
+        store_listing(self.db,listing(description='Zwykły dom.'),self.cfg,False)
+        payload=self.db.execute('SELECT payload FROM listings').fetchone()[0]
+        data=json.loads(payload);data['description']='Dom na działce R. O. D.'
+        self.db.execute('UPDATE listings SET payload=?',(json.dumps(data),));self.db.commit()
+        reassess_all(self.db,self.cfg)
+        assessment=json.loads(self.db.execute('SELECT assessment FROM listings').fetchone()[0])
+        self.assertEqual(assessment['status'],'rejected')
     def test_delivery_retry(self):
         store_listing(self.db,listing(),self.cfg,True)
         def failure(*a):raise RuntimeError('offline')
@@ -121,6 +136,9 @@ class EngineTests(unittest.TestCase):
     def test_html_escape(self):
         store_listing(self.db,listing(title='<script>alert(1)</script>'),self.cfg,False)
         with tempfile.TemporaryDirectory() as d:
-            p=Path(d)/'report.html';report(self.db,p);self.assertIn('&lt;script&gt;',p.read_text());self.assertNotIn('<script>alert(1)</script>',p.read_text())
+            p=Path(d)/'report.html';report(self.db,p);text=p.read_text()
+            self.assertIn('&lt;script&gt;',text);self.assertNotIn('<script>alert(1)</script>',text)
+            self.assertIn('Nie interesuje',text);self.assertIn('Obserwuj',text)
+            self.assertIn('domradar-preferences-v1',text);self.assertIn('data-key=',text)
 
 if __name__=='__main__':unittest.main()

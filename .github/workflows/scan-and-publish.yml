@@ -6,6 +6,7 @@ on:
     branches: [main]
     paths:
       - '.github/workflows/scan-and-publish.yml'
+      - 'requirements.txt'
       - 'config.top10.json'
       - 'domradar/**'
   schedule:
@@ -23,12 +24,15 @@ concurrency:
 jobs:
   scan:
     runs-on: ubuntu-latest
-    timeout-minutes: 90
+    timeout-minutes: 150
     steps:
       - uses: actions/checkout@v7
       - uses: actions/setup-python@v7
         with:
           python-version: '3.12'
+          cache: 'pip'
+      - name: Install scraper transport
+        run: pip install -r requirements.txt
       - name: Scan configured searches
         run: python -m domradar once --config config.top10.json --data data
       - name: Require a useful scan

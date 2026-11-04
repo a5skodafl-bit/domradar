@@ -1,21 +1,22 @@
 # DomRadar — domy na sprzedaż wokół wybranych miast
 
-Monitor w Pythonie 3.11+ z trwałą bazą SQLite i przeglądalną stroną ogłoszeń. Bez zewnętrznych bibliotek i bez płatnego API. Publiczna strona działa pod `https://a5skodafl-bit.github.io/domradar/`; szczegóły wdrożenia są w [DEPLOYMENT.md](DEPLOYMENT.md). Powiadomienia mogą trafiać na Telegram lub e-mail. Uzasadnienie projektu jest w ANALIZA.md.
+Monitor w Pythonie 3.11+ z trwałą bazą SQLite i przeglądalną stroną ogłoszeń. Nie korzysta z płatnego API; Scrapling zapewnia lekki transport HTTP zgodny z przeglądarką dla OLX. Publiczna strona działa pod `https://a5skodafl-bit.github.io/domradar/`; szczegóły wdrożenia są w [DEPLOYMENT.md](DEPLOYMENT.md). Powiadomienia mogą trafiać na Telegram lub e-mail. Uzasadnienie projektu jest w ANALIZA.md.
 
-Skan działa cyklicznie przez GitHub Actions, a baza i strona zachowują oferty pomiędzy skanami. Pełne pokrycie portali nie jest potwierdzone. Otodom blokował pobieranie HTTP 403; Szybko nie udostępniło współrzędnych w badanej ofercie. Szczegóły testów: WALIDACJA.md.
+Skan działa cyklicznie przez GitHub Actions, a baza i strona zachowują oferty pomiędzy skanami. Pełne pokrycie portali nie jest potwierdzone. OLX odrzuca standardowy klient HTTP kodem 403, dlatego wyłącznie dla tego źródła używany jest klient Scrapling podszywający warstwę TLS pod Chrome, bez uruchamiania pełnej przeglądarki. Szczegóły testów: WALIDACJA.md.
 
 ## Szybki start
 
 Rozpakuj archiwum, przejdź do folderu `domradar`, a następnie:
 
 ```bash
+pip install -r requirements.txt
 python -m domradar init
 python -m domradar demo
 ```
 
 Otwórz `data/demo.html`. Są tam **fikcyjne** oferty do prezentacji raportu, oddzielone od rzeczywistej bazy. Nic nie jest wysyłane.
 
-Gotowy profil wyszukiwania dla 10 największych miast (według ludności), promienia 15 km od centrum i ceny do 300 000 zł znajduje się w `config.top10.json`. Na docelowym serwerze skopiuj go do `config.json`. Nie ma limitu powierzchni. Aktywne są Morizon, Domiporta i Lento, z osobnymi adresami wyszukiwania oraz filtrem ceny dla każdego miasta. Strona pokazuje zdjęcie dostarczone przez portal, jeśli oferta je udostępnia, i pozwala filtrować wyniki także według źródła. Portalowe strony miast mogą pominąć oferty z miejscowości sąsiednich, choć mieszczą się one w promieniu 15 km; nie należy traktować profilu jako kompletnego przeglądu tego promienia. Niepotwierdzona dokładność współrzędnych powoduje status „Do sprawdzenia” także wtedy, gdy wyliczona odległość jest mniejsza niż 15 km.
+Gotowy profil wyszukiwania dla 10 największych miast (według ludności), promienia 15 km od centrum i ceny do 300 000 zł znajduje się w `config.top10.json`. Na docelowym serwerze skopiuj go do `config.json`. Nie ma limitu powierzchni. Aktywne są Otodom, OLX, Morizon, Gratka, Nieruchomości-Online, Domiporta, Adresowo i Lento, z osobnymi adresami wyszukiwania oraz filtrem ceny dla każdego miasta. Adresowo udostępnia promienie 10 lub 20 km, więc profil pobiera 20 km, a centralna ocena DomRadaru odrzuca pozycje poza 15 km. Oferty oznaczone jako ROD są odrzucane i ukrywane w domyślnym widoku. Strona pokazuje zdjęcie dostarczone przez portal, jeśli oferta je udostępnia, pozwala filtrować wyniki według źródła oraz ma przyciski „Obserwuj” i „Nie interesuje”. Te dwa osobiste stany są zapisywane w pamięci przeglądarki; odrzucone ręcznie oferty znikają z domyślnej listy, a obserwowane mają osobny filtr. Portalowe wyniki mogą być niepełne, a część ofert powtarza się między portalami. Niepotwierdzona dokładność współrzędnych powoduje status „Do sprawdzenia” także wtedy, gdy wyliczona odległość jest mniejsza niż 15 km.
 
 Otwórz utworzony `config.json`. Przykładowy budżet 1 mln zł, 80 m² i Warszawa są wyłącznie wartościami startowymi, nie ustalonymi preferencjami użytkownika.
 
@@ -124,16 +125,16 @@ Ocena 0–100 mierzy **dopasowanie i kompletność**: 40 pkt za budżet, 30 za p
 
 ## Zakres i ograniczenia
 
-- Dziesięć skonfigurowanych portali nie oznacza dziesięciu niezawodnych integracji. Zmiany HTML mogą wymagać aktualizacji.
-- Otodom: dedykowany parser danych Next.js, ale bieżący odczyt sieciowy z tego środowiska blokowany.
-- OLX: JSON-LD i dane prerenderowane; Morizon/Gratka: JSON-LD i Nuxt; pozostałe: JSON-LD, metadane i wybrane dane map.
+- Osiem aktywnych portali nie oznacza ośmiu niezawodnych integracji. Zmiany HTML mogą wymagać aktualizacji.
+- Otodom: dedykowany parser bieżących danych Next.js.
+- OLX: JSON-LD i dane prerenderowane pobierane lekkim klientem HTTP Scrapling; Morizon/Gratka: JSON-LD i Nuxt; pozostałe: JSON-LD, metadane i wybrane dane map.
 - Osiągnięcie HTTP 200 i parsowanie jednej oferty nie potwierdza pokrycia całego portalu ani skutecznej paginacji.
 - Deduplikacja dotyczy tego samego kanonicznego URL, także gdy występuje w kilku wyszukiwaniach. **Nie ma jeszcze pewnego łączenia tej samej nieruchomości między portalami.** Może przyjść więcej niż jeden alert o tym samym domu.
 - Odświeżenie starego ogłoszenia pod tym samym URL nie jest nową ofertą. Nowy URL może wygenerować nowy alert. „Nowe” oznacza nowo wykryte przez monitor, nie gwarantowaną datę publikacji.
 - Historia cen jest zapisywana, ale alerty dotyczą nowych ofert, nie każdej obniżki.
 - Nie oznaczamy automatycznie ofert jako usuniętych: nieobecność w ograniczonej liczbie stron tego nie dowodzi.
 - Błędy i braki są widoczne w raporcie. Nie ma osobnego alarmu o awarii portalu; raport trzeba okresowo kontrolować.
-- Brak omijania CAPTCHA lub blokad. Nie wysyłamy żądań równolegle do jednego portalu, a opóźnienie minimalne to 1 s.
+- Program nie rozwiązuje CAPTCHA i nie korzysta z proxy. Dla publicznych stron OLX Scrapling odtwarza transport HTTP przeglądarki bez uruchamiania pełnej przeglądarki. Żądania do jednego portalu nie są wysyłane równolegle, a opóźnienie minimalne to 1 s.
 
 ## Pozostałe komendy
 
