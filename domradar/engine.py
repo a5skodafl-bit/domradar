@@ -1,6 +1,5 @@
 from __future__ import annotations
 import hashlib
-import html
 import json
 import logging
 import os
@@ -193,18 +192,6 @@ def deliver(db,cfg,force=False,senders=None):
     db.execute("INSERT INTO meta VALUES('last_digest',?) ON CONFLICT(key) DO UPDATE SET value=excluded.value",(str(time.time()),));db.commit()
 
 
-def report(db,path,include_analysis=False):
-    rows=db.execute('SELECT payload,assessment,first_seen FROM listings ORDER BY first_seen DESC').fetchall()
-    scans=db.execute('SELECT at,source,status,discovered,parsed,error FROM scans ORDER BY at DESC LIMIT 100').fetchall()
-    e=lambda x:html.escape(str(x if x is not None else 'brak danych'),quote=True)
-    cards=[]
-    for payload,assessment,at in rows:
-        p=json.loads(payload);r=json.loads(assessment);a=r['analysis']
-        extra=(f"<p>Dopasowanie {e(r['score'])}/100 · Stan: {e(a['condition']['status'])} · Kredyt: {e(a['credit']['status'])}</p>" if include_analysis else '')
-        cards.append(f'''<article data-status="{e(r['status'])}"><span class="tag">{e(r['status'])}</span><h2><a href="{e(p['url'])}" target="_blank" rel="noopener noreferrer">{e(p['title'])}</a></h2><p><b>{e(p['price'])} {e(p['currency'])}</b> · {e(p['area_m2'])} m² · {e(p['source'])}</p><p>{e(p['location'])}</p><p>{e('; '.join(str(x['km'])+' km od '+x['city'] for x in r['distances']))} · dokładność: {e(p['geo_accuracy'])}</p>{extra}<p class="warn">{e('; '.join(r['missing']+r['reasons']))}</p><details><summary>Opis i dowody</summary><p>{e(p['description'])}</p><pre>{e(json.dumps(r['analysis'],ensure_ascii=False,indent=2))}</pre></details></article>''')
-    status=''.join(f'<tr><td>{e(time.strftime("%Y-%m-%d %H:%M:%S",time.localtime(at)))}</td><td>{e(sid)}</td><td>{e(status)}</td><td>{found}/{parsed}</td><td>{e(error)}</td></tr>' for at,sid,status,found,parsed,error in scans)
-    pending=db.execute('SELECT COUNT(*) FROM outbox WHERE sent IS NULL').fetchone()[0]
-    doc='''<!doctype html><html lang="pl"><meta charset="utf-8"><meta name="viewport" content="width=device-width"><title>DomRadar</title><style>body{font:16px system-ui;background:#f1f5f9;color:#142e42;max-width:1100px;margin:32px auto;padding:0 20px}h1{font-size:40px}article{background:white;border-radius:16px;padding:24px;margin:16px 0;box-shadow:0 2px 8px #0001}h2{font-size:21px}a{color:#086b77}.tag{float:right;background:#e1eef2;padding:4px 10px;border-radius:9px}.warn{color:#934b17}button{padding:10px 18px;margin:4px;border:1px solid #086b77;border-radius:8px;background:white;cursor:pointer}table{border-collapse:collapse;font-size:13px;width:100%}td,th{padding:8px;border-bottom:1px solid #ccd5dc;text-align:left;overflow-wrap:anywhere}pre{white-space:pre-wrap}details{margin-top:16px}article[hidden]{display:none}</style><h1>DomRadar</h1><p>Domy na sprzedaż · cena · metraż · odległość w linii prostej · link do źródła.</p>'''
-    doc+=f'<p>Oferty: {len(rows)} · oczekujące powiadomienia: {pending}</p><nav><button onclick="filterCards(\'match\')">Pasujące</button><button onclick="filterCards(\'review\')">Do sprawdzenia</button><button onclick="filterCards(\'rejected\')">Odrzucone</button><button onclick="filterCards(\'all\')">Wszystkie</button></nav>'+''.join(cards)
-    doc+='<h2>Stan źródeł</h2><p>ok = skan bez wykrytych błędów; partial = wynik niepełny; error = brak poprawnie odczytanych ofert. Nie potwierdza kompletności całego portalu.</p><table><tr><th>Czas lokalny</th><th>Portal</th><th>Status</th><th>Odkryte/odczytane</th><th>Błędy</th></tr>'+status+'</table><script>function filterCards(s){document.querySelectorAll("article").forEach(x=>x.hidden=s!=="all"&&x.dataset.status!==s)}filterCards("match")</script></html>'
-    dest=Path(path);dest.parent.mkdir(parents=True,exist_ok=True);tmp=dest.with_suffix('.tmp');tmp.write_text(doc,encoding='utf-8');tmp.replace(dest)
+def report(db, path, include_analysis=False, config=None):
+    from .site import render
+    return render(db, path, include_analysis, config)

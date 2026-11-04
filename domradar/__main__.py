@@ -42,20 +42,20 @@ def main():
             demo_cfg=cfg|{'cities':[{'name':'Warszawa','lat':52.2297,'lon':21.0122}], 'price_min':0,'price_max':1000000,'radius_km':40,'area_min':0,'area_max':None}
             samples=[Listing('demo','https://example.org/dom-1','PRZYKŁAD — dom pod Warszawą',850000,'PLN',140,52.28,20.9,'Przykładowa lokalizacja','exact',0,'house','sale','Dom gotowy do zamieszkania. Możliwość zakupu na kredyt — deklaracja sprzedającego.'),Listing('demo','https://example.org/dom-2','PRZYKŁAD — dom z brakującą lokalizacją',700000,'PLN',100,property_type='house',transaction='sale',description='Dom do remontu. Tylko gotówka.')]
             for x in samples:store_listing(db,x,demo_cfg,False)
-            report(db,root/'demo.html');print((root/'demo.html').resolve());return
-        if args.command=='report':report(db,root/'raport.html',cfg.get('include_analysis',False));print((root/'raport.html').resolve());return
+            report(db,root/'demo.html',config=demo_cfg);print((root/'demo.html').resolve());return
+        if args.command=='report':report(db,root/'raport.html',cfg.get('include_analysis',False),cfg);print((root/'raport.html').resolve());return
         if args.command=='export':
             rows=[{'listing':json.loads(x),'assessment':json.loads(y)} for x,y in db.execute('SELECT payload,assessment FROM listings')]
             target=root/'oferty.json';target.write_text(json.dumps(rows,ensure_ascii=False,indent=2),encoding='utf-8');print(target.resolve());return
         if args.command=='flush':
             if not args.send:p.error('Wysyłanie wymaga --send')
-            deliver(db,cfg,force=True);report(db,root/'raport.html',cfg.get('include_analysis',False));return
+            deliver(db,cfg,force=True);report(db,root/'raport.html',cfg.get('include_analysis',False),cfg);return
         if not any(s.get('enabled') for s in cfg['sources']):p.error('Włącz co najmniej jeden portal (enabled: true) i ustaw search_urls w config.json.')
         try:
             while True:
                 scan(db,cfg)
                 if args.send:deliver(db,cfg)
-                report(db,root/'raport.html',cfg.get('include_analysis',False))
+                report(db,root/'raport.html',cfg.get('include_analysis',False),cfg)
                 print('Raport: '+str((root/'raport.html').resolve()),flush=True)
                 if args.command=='once':break
                 deadline=time.monotonic()+cfg['poll_minutes']*60

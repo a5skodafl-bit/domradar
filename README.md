@@ -1,8 +1,8 @@
 # DomRadar — domy na sprzedaż wokół wybranych miast
 
-Pierwsza wersja samodzielnego monitora w Pythonie 3.11+. Bez zewnętrznych bibliotek i bez płatnego API. Raport HTML otwierasz w przeglądarce; powiadomienia mogą trafiać na Telegram lub e-mail. Kod napisany od zera po przeglądzie pięciu repozytoriów; uzasadnienie w ANALIZA.md.
+Monitor w Pythonie 3.11+ z trwałą bazą SQLite i przeglądalną stroną ogłoszeń. Bez zewnętrznych bibliotek i bez płatnego API. Publiczna strona jest przygotowana pod `https://a5skodafl-bit.github.io/domradar/`; szczegóły wdrożenia są w [DEPLOYMENT.md](DEPLOYMENT.md). Powiadomienia mogą trafiać na Telegram lub e-mail. Uzasadnienie projektu jest w ANALIZA.md.
 
-**To nie jest uruchomiona usługa.** Program musi działać na Twoim komputerze albo serwerze. Nie skonfigurowano kont ani wysyłki. Gotowe są mechanizmy i adaptery; pełne pokrycie dziesięciu portali nie jest potwierdzone. Otodom blokował pobieranie HTTP 403; Szybko nie udostępniło współrzędnych w badanej ofercie. Szczegóły testów: WALIDACJA.md.
+Skan działa cyklicznie przez GitHub Actions, a baza i strona zachowują oferty pomiędzy skanami. Pełne pokrycie portali nie jest potwierdzone. Otodom blokował pobieranie HTTP 403; Szybko nie udostępniło współrzędnych w badanej ofercie. Szczegóły testów: WALIDACJA.md.
 
 ## Szybki start
 
@@ -28,7 +28,7 @@ Otwórz utworzony `config.json`. Przykładowy budżet 1 mln zł, 80 m² i Warsza
 python -m domradar once
 ```
 
-Otwórz `data/raport.html`. Najpierw sprawdź sekcję „Stan źródeł”, potem karty „Pasujące” i „Do sprawdzenia”. Testuj konfigurację na jednym portalu i jednej okolicy, zanim włączysz pozostałe.
+Otwórz `data/raport.html`. To przeglądalny widok zapisanej bazy: wyszukuj ogłoszenia, filtruj miasto, status i cenę, sortuj wyniki. W sekcji „Stan źródeł” sprawdzaj, które skany się udały. Testuj konfigurację na jednym portalu i jednej okolicy, zanim włączysz pozostałe.
 
 **Ważne: filtry centralne sprawdzają pobrane oferty. Nie generują automatycznie filtrów wszystkich portali.** Wyszukiwania źródłowe muszą obejmować całą interesującą okolicę. Przykładowe linki są ogólnopolskie: pierwsze dwie strony całej Polski nie wystarczą do kompletnego monitorowania okolic Warszawy. Ustaw linki lokalne oraz odpowiednie `pages_per_search` i `max_details_per_search`. Program sygnalizuje przekroczenie limitu szczegółów oraz powtarzające się strony, ale nie gwarantuje pobrania całej bazy portalu. Paginacja z parametrem `page` wymaga sprawdzenia na każdym konkretnym wyszukiwaniu.
 
