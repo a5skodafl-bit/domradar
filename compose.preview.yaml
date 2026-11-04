@@ -1,0 +1,19 @@
+services:
+  web:
+    image: caddy:2.10-alpine
+    restart: unless-stopped
+    environment:
+      DOMRADAR_DOMAIN: http://:8080
+      DOMRADAR_USER: ${DOMRADAR_USER:?Set DOMRADAR_USER in .env}
+      DOMRADAR_PASSWORD_HASH: ${DOMRADAR_PASSWORD_HASH:?Set DOMRADAR_PASSWORD_HASH in .env}
+    volumes:
+      - ./Caddyfile:/etc/caddy/Caddyfile:ro
+      - ./preview:/srv/report:ro
+    expose:
+      - "8080"
+  tunnel:
+    image: cloudflare/cloudflared:latest
+    restart: unless-stopped
+    depends_on:
+      - web
+    command: tunnel --no-autoupdate --url http://web:8080

@@ -1,0 +1,68 @@
+name: Scan offers and publish report
+
+on:
+  workflow_dispatch:
+  schedule:
+    - cron: '23 */3 * * *'
+
+permissions:
+  contents: write
+  pages: write
+  id-token: write
+
+concurrency:
+  group: domradar-scan-and-publish
+  cancel-in-progress: false
+
+jobs:
+  scan:
+    runs-on: ubuntu-latest
+    timeout-minutes: 90
+    steps:
+      - uses: actions/checkout@v7
+      - uses: actions/setup-python@v7
+        with:
+          python-version: '3.12'
+      - name: Scan configured searches
+        run: python -m domradar once --config config.top10.json --data data
+      - name: Require a useful scan
+        run: |
+          python - <<'PY'
+          import sqlite3
+          db = sqlite3.connect('data/domradar.sqlite3')
+          total, working = db.execute('''
+              SELECT COUNT(*), SUM(CASE WHEN status != 'error' AND parsed > 0 THEN 1 ELSE 0 END)
+              FROM (SELECT status, parsed FROM scans ORDER BY at DESC LIMIT 10)
+          ''').fetchone()
+          if total != 10 or not working:
+              raise SystemExit(f'Scan failed: {working or 0}/{total} city searches returned offers')
+          print(f'Working city searches: {working}/{total}')
+          PY
+      - name: Persist scan state for the next run
+        run: |
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add -f data/domradar.sqlite3
+          if ! git diff --cached --quiet; then
+            git commit -m 'chore: save DomRadar scan state'
+            git push
+          fi
+      - name: Prepare public report
+        run: |
+          mkdir -p site
+          cp data/raport.html site/index.html
+          touch site/.nojekyll
+      - uses: actions/configure-pages@v5
+      - uses: actions/upload-pages-artifact@v4
+        with:
+          path: site
+
+  deploy:
+    needs: scan
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - id: deployment
+        uses: actions/deploy-pages@v4

@@ -1,0 +1,106 @@
+{
+  "price_min": 0,
+  "price_max": 1000000,
+  "radius_km": 40,
+  "cities": [
+    {
+      "name": "Warszawa",
+      "lat": 52.2297,
+      "lon": 21.0122,
+      "radius_km": 40
+    }
+  ],
+  "area_min": 80,
+  "area_max": null,
+  "poll_minutes": 60,
+  "digest_minutes": 360,
+  "request_delay_seconds": 2,
+  "pages_per_search": 2,
+  "max_details_per_search": 100,
+  "notify_initial": false,
+  "allow_approximate_geo": true,
+  "exclude_keywords": [],
+  "sources": [
+    {
+      "id": "otodom",
+      "enabled": false,
+      "search_urls": [
+        "https://www.otodom.pl/pl/wyniki/sprzedaz/dom/cala-polska"
+      ]
+    },
+    {
+      "id": "olx",
+      "enabled": false,
+      "search_urls": [
+        "https://www.olx.pl/nieruchomosci/domy/sprzedaz/"
+      ]
+    },
+    {
+      "id": "morizon",
+      "enabled": false,
+      "search_urls": [
+        "https://www.morizon.pl/domy/"
+      ]
+    },
+    {
+      "id": "gratka",
+      "enabled": false,
+      "search_urls": [
+        "https://gratka.pl/nieruchomosci/domy"
+      ]
+    },
+    {
+      "id": "nieruchomosci-online",
+      "enabled": false,
+      "search_urls": [
+        "https://www.nieruchomosci-online.pl/domy,sprzedaz/"
+      ]
+    },
+    {
+      "id": "domiporta",
+      "enabled": false,
+      "search_urls": [
+        "https://www.domiporta.pl/dom/sprzedam"
+      ]
+    },
+    {
+      "id": "adresowo",
+      "enabled": false,
+      "search_urls": [
+        "https://adresowo.pl/domy/"
+      ]
+    },
+    {
+      "id": "sprzedajemy",
+      "enabled": false,
+      "search_urls": [
+        "https://sprzedajemy.pl/nieruchomosci/domy/sprzedaz"
+      ]
+    },
+    {
+      "id": "lento",
+      "enabled": false,
+      "search_urls": [
+        "https://www.lento.pl/nieruchomosci/domy.html"
+      ]
+    },
+    {
+      "id": "szybko",
+      "enabled": false,
+      "search_urls": [
+        "https://www.szybko.pl/l/na-sprzedaz/dom/Polska"
+      ]
+    }
+  ],
+  "notifications": {
+    "telegram": {
+      "enabled": false,
+      "token_env": "TELEGRAM_BOT_TOKEN",
+      "chat_id_env": "TELEGRAM_CHAT_ID"
+    },
+    "email": {
+      "enabled": false
+    }
+  },
+  "include_analysis": false
+}

@@ -1,0 +1,17 @@
+{$DOMRADAR_DOMAIN} {
+    basic_auth {
+        {$DOMRADAR_USER} {$DOMRADAR_PASSWORD_HASH}
+    }
+
+    @report path / /raport.html
+    handle @report {
+        root * /srv/report
+        rewrite * /raport.html
+        header Cache-Control "no-store"
+        file_server
+    }
+
+    handle {
+        respond 404
+    }
+}

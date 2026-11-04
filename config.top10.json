@@ -1,0 +1,169 @@
+{
+  "price_min": 0,
+  "price_max": 300000,
+  "radius_km": 15,
+  "cities": [
+    {
+      "name": "Warszawa",
+      "lat": 52.2297,
+      "lon": 21.0122,
+      "radius_km": 15
+    },
+    {
+      "name": "Kraków",
+      "lat": 50.0647,
+      "lon": 19.945,
+      "radius_km": 15
+    },
+    {
+      "name": "Wrocław",
+      "lat": 51.1079,
+      "lon": 17.0385,
+      "radius_km": 15
+    },
+    {
+      "name": "Łódź",
+      "lat": 51.7592,
+      "lon": 19.456,
+      "radius_km": 15
+    },
+    {
+      "name": "Poznań",
+      "lat": 52.4064,
+      "lon": 16.9252,
+      "radius_km": 15
+    },
+    {
+      "name": "Gdańsk",
+      "lat": 54.352,
+      "lon": 18.6466,
+      "radius_km": 15
+    },
+    {
+      "name": "Szczecin",
+      "lat": 53.4285,
+      "lon": 14.5528,
+      "radius_km": 15
+    },
+    {
+      "name": "Lublin",
+      "lat": 51.2465,
+      "lon": 22.5684,
+      "radius_km": 15
+    },
+    {
+      "name": "Bydgoszcz",
+      "lat": 53.1235,
+      "lon": 18.0076,
+      "radius_km": 15
+    },
+    {
+      "name": "Białystok",
+      "lat": 53.1325,
+      "lon": 23.1688,
+      "radius_km": 15
+    }
+  ],
+  "area_min": 0,
+  "area_max": null,
+  "poll_minutes": 180,
+  "digest_minutes": 360,
+  "request_delay_seconds": 2,
+  "pages_per_search": 1,
+  "max_details_per_search": 35,
+  "notify_initial": false,
+  "allow_approximate_geo": true,
+  "exclude_keywords": [],
+  "sources": [
+    {
+      "id": "otodom",
+      "enabled": false,
+      "search_urls": [
+        "https://www.otodom.pl/pl/wyniki/sprzedaz/dom/cala-polska"
+      ]
+    },
+    {
+      "id": "olx",
+      "enabled": false,
+      "search_urls": [
+        "https://www.olx.pl/nieruchomosci/domy/sprzedaz/"
+      ]
+    },
+    {
+      "id": "morizon",
+      "enabled": true,
+      "search_urls": [
+        "https://www.morizon.pl/domy/warszawa/",
+        "https://www.morizon.pl/domy/krakow/",
+        "https://www.morizon.pl/domy/wroclaw/",
+        "https://www.morizon.pl/domy/lodz/",
+        "https://www.morizon.pl/domy/poznan/",
+        "https://www.morizon.pl/domy/gdansk/",
+        "https://www.morizon.pl/domy/szczecin/",
+        "https://www.morizon.pl/domy/lublin/",
+        "https://www.morizon.pl/domy/bydgoszcz/",
+        "https://www.morizon.pl/domy/bialystok/"
+      ]
+    },
+    {
+      "id": "gratka",
+      "enabled": false,
+      "search_urls": [
+        "https://gratka.pl/nieruchomosci/domy"
+      ]
+    },
+    {
+      "id": "nieruchomosci-online",
+      "enabled": false,
+      "search_urls": [
+        "https://www.nieruchomosci-online.pl/domy,sprzedaz/"
+      ]
+    },
+    {
+      "id": "domiporta",
+      "enabled": false,
+      "search_urls": [
+        "https://www.domiporta.pl/dom/sprzedam"
+      ]
+    },
+    {
+      "id": "adresowo",
+      "enabled": false,
+      "search_urls": [
+        "https://adresowo.pl/domy/"
+      ]
+    },
+    {
+      "id": "sprzedajemy",
+      "enabled": false,
+      "search_urls": [
+        "https://sprzedajemy.pl/nieruchomosci/domy/sprzedaz"
+      ]
+    },
+    {
+      "id": "lento",
+      "enabled": false,
+      "search_urls": [
+        "https://www.lento.pl/nieruchomosci/domy.html"
+      ]
+    },
+    {
+      "id": "szybko",
+      "enabled": false,
+      "search_urls": [
+        "https://www.szybko.pl/l/na-sprzedaz/dom/Polska"
+      ]
+    }
+  ],
+  "notifications": {
+    "telegram": {
+      "enabled": false,
+      "token_env": "TELEGRAM_BOT_TOKEN",
+      "chat_id_env": "TELEGRAM_CHAT_ID"
+    },
+    "email": {
+      "enabled": false
+    }
+  },
+  "include_analysis": false
+}
