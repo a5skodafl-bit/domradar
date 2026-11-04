@@ -1,6 +1,6 @@
 # DomRadar — domy na sprzedaż wokół wybranych miast
 
-Monitor w Pythonie 3.11+ z trwałą bazą SQLite i przeglądalną stroną ogłoszeń. Bez zewnętrznych bibliotek i bez płatnego API. Publiczna strona jest przygotowana pod `https://a5skodafl-bit.github.io/domradar/`; szczegóły wdrożenia są w [DEPLOYMENT.md](DEPLOYMENT.md). Powiadomienia mogą trafiać na Telegram lub e-mail. Uzasadnienie projektu jest w ANALIZA.md.
+Monitor w Pythonie 3.11+ z trwałą bazą SQLite i przeglądalną stroną ogłoszeń. Bez zewnętrznych bibliotek i bez płatnego API. Publiczna strona działa pod `https://a5skodafl-bit.github.io/domradar/`; szczegóły wdrożenia są w [DEPLOYMENT.md](DEPLOYMENT.md). Powiadomienia mogą trafiać na Telegram lub e-mail. Uzasadnienie projektu jest w ANALIZA.md.
 
 Skan działa cyklicznie przez GitHub Actions, a baza i strona zachowują oferty pomiędzy skanami. Pełne pokrycie portali nie jest potwierdzone. Otodom blokował pobieranie HTTP 403; Szybko nie udostępniło współrzędnych w badanej ofercie. Szczegóły testów: WALIDACJA.md.
 
