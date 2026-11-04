@@ -74,6 +74,21 @@ def types(obj):
     v=obj.get('@type',[]);return [x.rsplit('/',1)[-1] for x in ([v] if isinstance(v,str) else v)]
 
 
+def image_url(value, base):
+    """Return one safe public image URL from JSON-LD or page metadata."""
+    if isinstance(value,list):
+        for item in value:
+            result=image_url(item,base)
+            if result:return result
+        return ''
+    if isinstance(value,dict):
+        value=value.get('contentUrl') or value.get('url') or value.get('@id') or ''
+    if not isinstance(value,str) or not value.strip():return ''
+    result=urljoin(base,value.strip());parsed=urlsplit(result)
+    if parsed.scheme!='https' or not parsed.hostname or parsed.username or parsed.password or parsed.port not in {None,443}:return ''
+    return result if len(result)<=3000 else ''
+
+
 def classify(title, url, schema_types=()):
     f=fold(title+' '+url)
     house = bool(set(schema_types)&{'House','SingleFamilyResidence'}) or bool(re.search(r'\bdom\b|\bdomu\b|domy|sprzedaz-dom|sprzedam-dom|house',f))
@@ -125,7 +140,8 @@ def parse_otodom(page, url, source):
         radius=number(geo.get('radius') if 'radius' in geo else (loc.get('mapDetails') or {}).get('radius',loc.get('radius')))
         address=loc.get('address') or {}
         names=[v.get('name','') if isinstance(v,dict) else str(v or '') for v in address.values()]
-        listing=Listing(source,url,clean(ad.get('title')),number(price.get('value') if isinstance(price,dict) else price) or number(t('Price')),str(price.get('currency','') if isinstance(price,dict) else ''),number(ad.get('areaInSquareMeters')) or number(t('Area')),number(geo.get('latitude')),number(geo.get('longitude')),', '.join(x for x in names if x),'approximate' if radius else 'unknown',radius,kind,tx,clean(ad.get('description')),str(ad.get('dateCreated') or ''),str(t('Build_condition') or ''),'Otodom __NEXT_DATA__.props.pageProps.ad')
+        photo=image_url(ad.get('images') or ad.get('image') or ad.get('photos'),url)
+        listing=Listing(source,url,clean(ad.get('title')),number(price.get('value') if isinstance(price,dict) else price) or number(t('Price')),str(price.get('currency','') if isinstance(price,dict) else ''),number(ad.get('areaInSquareMeters')) or number(t('Area')),number(geo.get('latitude')),number(geo.get('longitude')),', '.join(x for x in names if x),'approximate' if radius else 'unknown',radius,kind,tx,clean(ad.get('description')),str(ad.get('dateCreated') or ''),str(t('Build_condition') or ''),'Otodom __NEXT_DATA__.props.pageProps.ad',photo)
         # Currency must be explicitly stated, not inferred from country/domain.
         if not listing.currency:listing.currency=str(t('Currency') or '')
         return listing
@@ -171,7 +187,8 @@ def parse_detail(text, url, source):
     if lat is not None and not (-90<=lat<=90):lat=None
     if lon is not None and not (-180<=lon<=180):lon=None
     if not title or (price is None and not desc):raise ValueError('Nie rozpoznano szczegółów oferty; możliwa blokada lub zmiana struktury.')
-    result = Listing(source,url,title,price,str(currency),area,lat,lon,location,'unknown',None,kind,tx,desc,str(obj.get('datePosted') or obj.get('datePublished') or ''),'','JSON-LD / metadane HTML')
+    photo=image_url(item.get('image') or obj.get('image') or page.meta.get('og:image') or page.meta.get('twitter:image'),url)
+    result = Listing(source,url,title,price,str(currency),area,lat,lon,location,'unknown',None,kind,tx,desc,str(obj.get('datePosted') or obj.get('datePublished') or ''),'','JSON-LD / metadane HTML',photo)
     return enrich(result,page,text,objects)
 
 

@@ -6,7 +6,7 @@ Publiczna baza ogłoszeń jest publikowana pod adresem `https://a5skodafl-bit.gi
 
 Wymagane jest publiczne repozytorium GitHub na darmowym planie. GitHub Pages jest publiczny bez logowania. Plik SQLite w repozytorium również jest publiczny; nie zapisuj w nim sekretów. Strona pokazuje stan zapisanej bazy z ostatniego ukończonego skanu, a filtry działają w przeglądarce. Skan działa cyklicznie, a nie jako stały proces. Zaplanowane zadania mogą się opóźnić lub zostać pominięte przy obciążeniu GitHub. Skany mogą także zostać wyłączone po 60 dniach bez aktywności repozytorium. Sprawdzaj historię Actions i stan źródeł na stronie.
 
-Profil `config.top10.json` obejmuje 10 największych miast, promień 15 km, cenę do 300 000 zł i brak limitu metrażu. Aktywne są miejskie strony Morizon z filtrem ceny ustawionym w wyszukiwaniu portalu. Nie gwarantują one objęcia wszystkich podmiejskich ofert w promieniu 15 km, a portale mogą blokować żądania z chmury. Współrzędne Morizon mają niepotwierdzoną dokładność, dlatego oferty są oznaczane jako „Do sprawdzenia”, zanim uzna się lokalizację za pewną.
+Profil `config.top10.json` obejmuje 10 największych miast, promień 15 km, cenę do 300 000 zł i brak limitu metrażu. Aktywne są miejskie wyszukiwania Morizon, Domiporta i Lento z filtrem ceny. Nie gwarantują one objęcia wszystkich podmiejskich ofert w promieniu 15 km, a portale mogą blokować żądania z chmury. Niepotwierdzona dokładność współrzędnych powoduje oznaczenie „Do sprawdzenia”, zanim lokalizacja zostanie uznana za pewną. Zdjęcia są ładowane bezpośrednio z adresów udostępnionych w metadanych portali; niedostępny obraz jest automatycznie ukrywany.
 
 ### Domena DigitalPlat FreeDomain
 

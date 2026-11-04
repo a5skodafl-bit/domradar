@@ -20,7 +20,7 @@ def listing(**kw):
     return Listing(**(d|kw))
 
 def schema(**kw):
-    d={'@type':'RealEstateListing','url':'https://lento.pl/dom,123456.html','name':'Dom na sprzedaż','description':'Dom do remontu. Możliwość zakupu na kredyt.','mainEntity':{'@type':'House','floorSize':{'value':130,'unitCode':'MTK'},'geo':{'latitude':52.25,'longitude':21.02}},'offers':{'price':850000,'priceCurrency':'PLN','businessFunction':'https://schema.org/SellAction'}}
+    d={'@type':'RealEstateListing','url':'https://lento.pl/dom,123456.html','name':'Dom na sprzedaż','description':'Dom do remontu. Możliwość zakupu na kredyt.','image':'https://img.example.org/dom.jpg','mainEntity':{'@type':'House','floorSize':{'value':130,'unitCode':'MTK'},'geo':{'latitude':52.25,'longitude':21.02}},'offers':{'price':850000,'priceCurrency':'PLN','businessFunction':'https://schema.org/SellAction'}}
     d.update(kw)
     return '<script type="application/ld+json">'+json.dumps(d)+'</script>'
 
@@ -55,6 +55,7 @@ class ParserTests(unittest.TestCase):
         x=parse_detail(schema(),'https://lento.pl/dom,123456.html','lento')
         self.assertEqual((x.area_m2,x.price,x.property_type,x.transaction),(130,850000,'house','sale'))
         self.assertEqual(x.lat,52.25)
+        self.assertEqual(x.image_url,'https://img.example.org/dom.jpg')
     def test_related_ad_not_taken(self):
         text=schema()+'<script type="application/ld+json">'+json.dumps({'@type':'Product','url':'https://lento.pl/inny,987654.html','name':'Inny dom','offers':{'price':1},'geo':{'latitude':1,'longitude':1}})+'</script>'
         x=parse_detail(text,'https://lento.pl/dom,123456.html','lento');self.assertEqual(x.price,850000)

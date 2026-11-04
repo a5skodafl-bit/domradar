@@ -34,15 +34,21 @@ jobs:
       - name: Require a useful scan
         run: |
           python - <<'PY'
+          import json
           import sqlite3
+          cfg = json.load(open('config.top10.json', encoding='utf-8'))
+          enabled = [source for source in cfg['sources'] if source.get('enabled')]
+          expected = sum(len(source['search_urls']) for source in enabled)
           db = sqlite3.connect('data/domradar.sqlite3')
-          total, working = db.execute('''
-              SELECT COUNT(*), SUM(CASE WHEN status != 'error' AND parsed > 0 THEN 1 ELSE 0 END)
-              FROM (SELECT status, parsed FROM scans ORDER BY at DESC LIMIT 10)
-          ''').fetchone()
-          if total != 10 or not working:
-              raise SystemExit(f'Scan failed: {working or 0}/{total} city searches returned offers')
-          print(f'Working city searches: {working}/{total}')
+          latest = db.execute('''SELECT source, status, parsed FROM scans
+                                 ORDER BY at DESC LIMIT ?''', (expected,)).fetchall()
+          working = sum(status != 'error' and parsed > 0 for _, status, parsed in latest)
+          by_source = {source['id']: 0 for source in enabled}
+          for source, status, parsed in latest:
+              by_source[source] = by_source.get(source, 0) + int(status != 'error' and parsed > 0)
+          if len(latest) != expected or working == 0 or any(count == 0 for count in by_source.values()):
+              raise SystemExit(f'Scan failed: {working}/{len(latest)} working searches; sources={by_source}')
+          print(f'Working city searches: {working}/{expected}; sources={by_source}')
           PY
       - name: Persist scan state for the next run
         run: |

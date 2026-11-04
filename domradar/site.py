@@ -25,6 +25,7 @@ def render(db, path, include_analysis=False, config=None):
                           FROM scans ORDER BY at DESC LIMIT 100''').fetchall()
     cards = []
     city_names = set()
+    source_names = set()
     for payload, assessment, first_seen, last_seen in rows:
         item = json.loads(payload)
         result = json.loads(assessment)
@@ -32,6 +33,8 @@ def render(db, path, include_analysis=False, config=None):
         city = near.get('city') or ''
         if city:
             city_names.add(city)
+        if item.get('source'):
+            source_names.add(item['source'])
         status = result['status']
         label = {'match': 'Pasuje', 'review': 'Do sprawdzenia', 'rejected': 'Poza kryteriami'}.get(status, status)
         price = item.get('price')
@@ -42,9 +45,14 @@ def render(db, path, include_analysis=False, config=None):
         if include_analysis:
             extra = (f"<p>Stan: {_escape((analysis.get('condition') or {}).get('status'))} · "
                      f"Kredyt: {_escape((analysis.get('credit') or {}).get('status'))}</p>")
-        cards.append(f'''<article class="offer" data-status="{_escape(status)}" data-city="{_escape(city)}"
+        photo = item.get('image_url') or ''
+        image = (f'''<a class="photo" href="{_escape(item.get('url'))}" target="_blank" rel="noopener noreferrer">
+          <img src="{_escape(photo)}" alt="Zdjęcie: {_escape(item.get('title') or 'ogłoszenie')}" loading="lazy" referrerpolicy="no-referrer" onerror="this.closest('article').classList.remove('has-photo');this.closest('.photo').remove()"></a>''' if photo else '')
+        cards.append(f'''<article class="offer{' has-photo' if photo else ''}" data-status="{_escape(status)}" data-city="{_escape(city)}" data-source="{_escape(item.get('source'))}"
             data-price="{_escape(price if price is not None else '')}" data-distance="{_escape(near.get('km', ''))}"
             data-seen="{_escape(last_seen)}">
+          {image}
+          <div class="offer-body">
           <div class="offer-top"><span class="badge { _escape(status) }">{_escape(label)}</span><span class="source">{_escape(item.get('source'))}</span></div>
           <h2><a href="{_escape(item.get('url'))}" target="_blank" rel="noopener noreferrer">{_escape(item.get('title') or 'Ogłoszenie bez tytułu')}</a></h2>
           <p class="price">{_escape(_number(price, ' zł'))}</p>
@@ -53,9 +61,11 @@ def render(db, path, include_analysis=False, config=None):
           {f'<p class="note">{_escape(note)}</p>' if note else ''}{extra}
           <details><summary>Fragment opisu</summary><p class="description">{_escape((item.get('description') or 'Brak opisu')[:350])}</p>
           <p class="meta">Pierwszy raz w bazie: {_escape(time.strftime('%Y-%m-%d %H:%M UTC', time.gmtime(first_seen)))}</p></details>
+          </div>
         </article>''')
 
     options = ''.join(f'<option value="{_escape(city)}">{_escape(city)}</option>' for city in sorted(city_names))
+    source_options = ''.join(f'<option value="{_escape(source)}">{_escape(source)}</option>' for source in sorted(source_names))
     max_price = config.get('price_max') if config else None
     last_scan = max((row[0] for row in scans), default=None)
     freshness = time.strftime('%Y-%m-%d %H:%M UTC', time.gmtime(last_scan)) if last_scan else 'jeszcze nie wykonano'
@@ -74,23 +84,25 @@ body{{max-width:1120px;margin:0 auto;padding:28px 20px 70px}}h1{{font-size:clamp
 h2{{font-size:1.2rem;margin:12px 0}}a{{color:#087083}}a:hover{{text-decoration-thickness:2px}}
 .intro,.meta,.source{{color:#597184}}.intro{{max-width:750px;line-height:1.55}}
 .summary{{display:flex;gap:14px;flex-wrap:wrap;margin:22px 0}}.summary span{{background:#fff;padding:12px 16px;border-radius:12px;box-shadow:0 2px 8px #1330470d}}
-.filters{{display:grid;grid-template-columns:2fr repeat(3,1fr);gap:12px;background:#fff;padding:18px;border-radius:18px;box-shadow:0 2px 12px #13304712}}
+.filters{{display:grid;grid-template-columns:2fr repeat(4,1fr);gap:12px;background:#fff;padding:18px;border-radius:18px;box-shadow:0 2px 12px #13304712}}
 label{{display:grid;gap:5px;font-weight:600;font-size:.88rem}}input,select{{font:inherit;width:100%;padding:11px;border:1px solid #b8cbd3;border-radius:9px;background:#fff;color:#163047}}
 .sortbar{{display:flex;justify-content:space-between;align-items:center;gap:12px;margin:24px 0 12px;flex-wrap:wrap}}.sortbar label{{display:flex;align-items:center;gap:8px}}
-.sortbar select{{width:auto}}.offer{{background:#fff;padding:20px 24px;margin:12px 0;border-radius:16px;box-shadow:0 2px 12px #13304712}}
+.sortbar select{{width:auto}}.offer{{display:grid;grid-template-columns:minmax(220px,32%) 1fr;background:#fff;margin:12px 0;border-radius:16px;box-shadow:0 2px 12px #13304712;overflow:hidden}}.offer:not(.has-photo){{grid-template-columns:1fr}}.offer-body{{padding:20px 24px;min-width:0}}
+.photo{{display:block;min-height:240px;background:#dce6ea}}.photo img{{width:100%;height:100%;min-height:240px;max-height:340px;object-fit:cover;display:block}}
 .offer-top{{display:flex;justify-content:space-between;align-items:center;gap:12px}}.badge{{padding:4px 10px;border-radius:100px;font-size:.85rem;font-weight:700;background:#dbe9ec}}
 .badge.match{{background:#d9f4e6;color:#17613b}}.badge.review{{background:#fff0c8;color:#795500}}.badge.rejected{{background:#e6e9ec;color:#56616b}}
 .price{{font-weight:750;font-size:1.3rem;margin:8px 0}}.note{{color:#8a4b19}}.description{{white-space:pre-wrap;line-height:1.55}}
 details{{border-top:1px solid #e4eaed;padding-top:12px}}summary{{cursor:pointer;font-weight:600}}button{{padding:11px 18px;border:1px solid #087083;color:#087083;background:white;border-radius:9px;cursor:pointer}}
 #more{{display:block;margin:24px auto}}#empty{{background:#fff;padding:28px;border-radius:16px}}.hidden{{display:none!important}}
 table{{border-collapse:collapse;width:100%;font-size:.82rem}}td,th{{border-bottom:1px solid #d7e0e5;text-align:left;padding:8px;vertical-align:top;overflow-wrap:anywhere}}
-.table-wrap{{overflow-x:auto}}.health{{margin-top:55px}}.health details{{margin-top:16px}}@media(max-width:760px){{.filters{{grid-template-columns:1fr 1fr}}}}@media(max-width:510px){{.filters{{grid-template-columns:1fr}}}}
+.table-wrap{{overflow-x:auto}}.health{{margin-top:55px}}.health details{{margin-top:16px}}@media(max-width:760px){{.filters{{grid-template-columns:1fr 1fr}}.offer{{grid-template-columns:1fr}}.photo,.photo img{{min-height:210px;max-height:300px}}}}@media(max-width:510px){{.filters{{grid-template-columns:1fr}}}}
 </style></head><body>
 <header><h1>DomRadar</h1><p class="intro">Baza domów na sprzedaż w pobliżu 10 największych miast Polski. Przeszukuj zapisane ogłoszenia, filtruj wyniki i otwieraj oferty u źródła.</p></header>
 <div class="summary"><span><strong>{len(rows)}</strong> ogłoszeń w bazie</span><span>Ostatni skan: <strong>{_escape(freshness)}</strong></span><span>Budżet: <strong>do {_escape(_number(max_price, ' zł'))}</strong></span></div>
 <section class="filters" aria-label="Filtry ogłoszeń">
 <label>Szukaj<input id="query" type="search" placeholder="Miejscowość, tytuł, opis"></label>
 <label>Miasto<select id="city"><option value="">Wszystkie</option>{options}</select></label>
+<label>Portal<select id="source"><option value="">Wszystkie</option>{source_options}</select></label>
 <label>Status<select id="status"><option value="eligible">Pasujące i do sprawdzenia</option><option value="match">Tylko pasujące</option><option value="review">Do sprawdzenia</option><option value="all">Wszystkie zapisane</option></select></label>
 <label>Cena do (zł)<input id="price" type="number" min="0" step="1000" value="{_escape(max_price if max_price is not None else '')}" placeholder="Bez limitu"></label>
 </section>
@@ -100,10 +112,10 @@ table{{border-collapse:collapse;width:100%;font-size:.82rem}}td,th{{border-botto
 <details><summary>Historia skanów ({len(scans)})</summary><div class="table-wrap"><table><thead><tr><th>Czas</th><th>Źródło</th><th>Status</th><th>Odkryte/odczytane</th><th>Błędy</th></tr></thead><tbody>{scan_rows}</tbody></table></div></details></section>
 <script>
 const cards=[...document.querySelectorAll('.offer')];let limit=20;
-const fields={{query:document.getElementById('query'),city:document.getElementById('city'),status:document.getElementById('status'),price:document.getElementById('price'),sort:document.getElementById('sort')}};
+const fields={{query:document.getElementById('query'),city:document.getElementById('city'),source:document.getElementById('source'),status:document.getElementById('status'),price:document.getElementById('price'),sort:document.getElementById('sort')}};
 function update(){{
-  const q=fields.query.value.trim().toLocaleLowerCase('pl');const city=fields.city.value;const status=fields.status.value;const max=fields.price.value===''?Infinity:Number(fields.price.value);
-  const found=cards.filter(card=>{{const state=card.dataset.status;return (!q||card.textContent.toLocaleLowerCase('pl').includes(q))&&(!city||card.dataset.city===city)&&(status==='all'||state===status||(status==='eligible'&&state!=='rejected'))&&(card.dataset.price===''?max===Infinity:Number(card.dataset.price)<=max)}});
+  const q=fields.query.value.trim().toLocaleLowerCase('pl');const city=fields.city.value;const source=fields.source.value;const status=fields.status.value;const max=fields.price.value===''?Infinity:Number(fields.price.value);
+  const found=cards.filter(card=>{{const state=card.dataset.status;return (!q||card.textContent.toLocaleLowerCase('pl').includes(q))&&(!city||card.dataset.city===city)&&(!source||card.dataset.source===source)&&(status==='all'||state===status||(status==='eligible'&&state!=='rejected'))&&(card.dataset.price===''?max===Infinity:Number(card.dataset.price)<=max)}});
   const value=fields.sort.value;found.sort((a,b)=>value==='price'?(Number(a.dataset.price||Infinity)-Number(b.dataset.price||Infinity)):value==='distance'?(Number(a.dataset.distance||Infinity)-Number(b.dataset.distance||Infinity)):(Number(b.dataset.seen)-Number(a.dataset.seen)));
   const root=document.getElementById('offers');found.forEach(card=>root.appendChild(card));cards.forEach(card=>card.classList.add('hidden'));found.slice(0,limit).forEach(card=>card.classList.remove('hidden'));
   document.getElementById('count').textContent=`Znaleziono: ${{found.length}}`;

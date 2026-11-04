@@ -47,6 +47,7 @@ class Listing:
     published_at: str = ''
     condition: str = ''
     evidence: str = ''
+    image_url: str = ''
 
     def dict(self): return asdict(self)
 

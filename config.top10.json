@@ -121,9 +121,18 @@
     },
     {
       "id": "domiporta",
-      "enabled": false,
+      "enabled": true,
       "search_urls": [
-        "https://www.domiporta.pl/dom/sprzedam"
+        "https://www.domiporta.pl/dom/sprzedam/mazowieckie/warszawa?Price.To=300000",
+        "https://www.domiporta.pl/dom/sprzedam/malopolskie/krakow?Price.To=300000",
+        "https://www.domiporta.pl/dom/sprzedam/dolnoslaskie/wroclaw?Price.To=300000",
+        "https://www.domiporta.pl/dom/sprzedam/lodzkie/lodz?Price.To=300000",
+        "https://www.domiporta.pl/dom/sprzedam/wielkopolskie/poznan?Price.To=300000",
+        "https://www.domiporta.pl/dom/sprzedam/pomorskie/gdansk?Price.To=300000",
+        "https://www.domiporta.pl/dom/sprzedam/zachodniopomorskie/szczecin?Price.To=300000",
+        "https://www.domiporta.pl/dom/sprzedam/lubelskie/lublin?Price.To=300000",
+        "https://www.domiporta.pl/dom/sprzedam/kujawsko-pomorskie/bydgoszcz?Price.To=300000",
+        "https://www.domiporta.pl/dom/sprzedam/podlaskie/bialystok?Price.To=300000"
       ]
     },
     {
@@ -142,9 +151,18 @@
     },
     {
       "id": "lento",
-      "enabled": false,
+      "enabled": true,
       "search_urls": [
-        "https://www.lento.pl/nieruchomosci/domy.html"
+        "https://warszawa.lento.pl/nieruchomosci/domy/sprzedaz.html?price_to=300000",
+        "https://krakow.lento.pl/nieruchomosci/domy/sprzedaz.html?price_to=300000",
+        "https://wroclaw.lento.pl/nieruchomosci/domy/sprzedaz.html?price_to=300000",
+        "https://lodz.lento.pl/nieruchomosci/domy/sprzedaz.html?price_to=300000",
+        "https://poznan.lento.pl/nieruchomosci/domy/sprzedaz.html?price_to=300000",
+        "https://gdansk.lento.pl/nieruchomosci/domy/sprzedaz.html?price_to=300000",
+        "https://szczecin.lento.pl/nieruchomosci/domy/sprzedaz.html?price_to=300000",
+        "https://lublin.lento.pl/nieruchomosci/domy/sprzedaz.html?price_to=300000",
+        "https://bydgoszcz.lento.pl/nieruchomosci/domy/sprzedaz.html?price_to=300000",
+        "https://bialystok.lento.pl/nieruchomosci/domy/sprzedaz.html?price_to=300000"
       ]
     },
     {
