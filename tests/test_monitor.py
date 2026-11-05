@@ -158,10 +158,15 @@ class EngineTests(unittest.TestCase):
         store_listing(self.db,listing(title='<script>alert(1)</script>',image_url='https://img.example.org/one.jpg',image_urls=['https://img.example.org/one.jpg','https://img.example.org/two.jpg']),self.cfg,False)
         with tempfile.TemporaryDirectory() as d:
             p=Path(d)/'report.html';report(self.db,p);text=p.read_text()
-            self.assertIn('&lt;script&gt;',text);self.assertNotIn('<script>alert(1)</script>',text)
+            api=json.loads((Path(d)/'api'/'report-listings.json').read_text())
+            self.assertNotIn('<script>alert(1)</script>',text)
+            self.assertIn('<main id="offers"></main>',text)
+            self.assertEqual(api['items'][0]['title'],'<script>alert(1)</script>')
+            self.assertIn('function escapeHtml',text)
             self.assertIn('Nie interesuje',text);self.assertIn('Obserwuj',text)
             self.assertIn('domradar-preferences-v1',text);self.assertIn('data-key=',text)
             self.assertIn('const PAGE_SIZE=50',text);self.assertIn('gallery-next',text)
-            self.assertIn('openstreetmap.org/export/embed.html',text)
+            self.assertIn('openstreetmap.org/export/embed.html',api['items'][0]['map']['embed'])
+            self.assertEqual(api['count'],1)
 
 if __name__=='__main__':unittest.main()

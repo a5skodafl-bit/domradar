@@ -30,6 +30,7 @@ jobs:
           python -m domradar report --config config.top10.json --data data
           mkdir -p site
           cp data/raport.html site/index.html
+          cp -R data/api site/api
           touch site/.nojekyll
       - uses: actions/configure-pages@v5
       - uses: actions/upload-pages-artifact@v4
