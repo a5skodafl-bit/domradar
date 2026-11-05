@@ -61,6 +61,8 @@ def render(db, path, include_analysis=False, config=None):
         result = json.loads(assessment)
         if 'poza promieniem wszystkich miast' in result.get('reasons', []):
             continue
+        if any(reason.startswith('syndyk —') for reason in result.get('reasons', [])):
+            continue
         near = result.get('nearest') or {}
         city = near.get('city') or ''
         if city:
@@ -130,7 +132,7 @@ details{{border-top:1px solid #e4eaed;padding-top:12px}}summary{{cursor:pointer;
 table{{border-collapse:collapse;width:100%;font-size:.82rem}}td,th{{border-bottom:1px solid #d7e0e5;text-align:left;padding:8px;vertical-align:top;overflow-wrap:anywhere}}
 .table-wrap{{overflow-x:auto}}.health{{margin-top:55px}}.health details{{margin-top:16px}}@media(max-width:760px){{.filters{{grid-template-columns:1fr 1fr}}.offer{{grid-template-columns:1fr}}.media{{border-right:0;border-bottom:1px solid #d7e0e5}}.photo,.photo img{{min-height:210px;max-height:300px}}}}@media(max-width:510px){{.filters{{grid-template-columns:1fr}}.actions button{{flex:1 1 100%}}}}
 </style></head><body>
-<header><h1>DomRadar</h1><p class="intro">Baza domów na sprzedaż w pobliżu 10 największych miast Polski. Przeszukuj zapisane ogłoszenia, filtruj wyniki i otwieraj oferty u źródła.</p></header>
+<header><h1>DomRadar</h1><p class="intro">Baza domów na sprzedaż w pobliżu wybranych miast Polski. Przeszukuj zapisane ogłoszenia, filtruj wyniki i otwieraj oferty u źródła.</p></header>
 <div class="summary"><span><strong>{len(records)}</strong> ogłoszeń w bazie</span><span>Ostatni skan: <strong>{_escape(freshness)}</strong></span><span>Budżety: <strong>{budget_summary or 'do '+_escape(_number(max_price, ' zł'))}</strong></span></div>
 <section class="filters" aria-label="Filtry ogłoszeń">
 <label>Szukaj<input id="query" type="search" placeholder="Miejscowość, tytuł, opis"></label>

@@ -41,8 +41,16 @@ class CoreTests(unittest.TestCase):
         self.assertEqual(assess(listing(description='Dom na działce ROD.'),config())['status'],'rejected')
         self.assertEqual(assess(listing(description='Dom całoroczny na działce R. O. D.'),config())['status'],'rejected')
         self.assertEqual(assess(listing(description='Dom na działce rekreacyjnej.'),config())['status'],'review')
-        self.assertEqual(assess(listing(description='Syndyk sprzedaje udział 1/24 w nieruchomości.'),config())['status'],'review')
+        self.assertEqual(assess(listing(description='Sprzedaż udziału 1/24 w nieruchomości.'),config())['status'],'review')
         self.assertEqual(assess(listing(description='Sprzedaż gotowych domów mobilnych.'),config())['status'],'review')
+    def test_syndic_requires_explicit_full_ownership(self):
+        share=assess(listing(description='Syndyk sprzedaje udział 1/24 w nieruchomości.'),config())
+        unknown=assess(listing(description='Syndyk masy upadłości sprzedaje dom.'),config())
+        full=assess(listing(description='Syndyk sprzedaje cały dom. Pełna własność.'),config())
+        self.assertEqual(share['status'],'rejected')
+        self.assertIn('syndyk — sprzedaż udziału zamiast pełnej własności',share['reasons'])
+        self.assertEqual(unknown['status'],'rejected')
+        self.assertEqual(full['status'],'match')
     def test_unknown_currency(self):self.assertEqual(assess(listing(currency=''),config())['status'],'review')
     def test_missing_geo(self):self.assertEqual(assess(listing(lat=None),config())['status'],'review')
     def test_unknown_geo_default(self):self.assertEqual(assess(listing(geo_accuracy='unknown'),config())['status'],'review')
@@ -108,6 +116,11 @@ class EngineTests(unittest.TestCase):
         self.assertIn('poza promieniem wszystkich miast',result['reasons'])
         self.assertEqual(self.db.execute('SELECT COUNT(*) FROM listings').fetchone()[0],0)
         self.assertEqual(self.db.execute('SELECT COUNT(*) FROM history').fetchone()[0],0)
+    def test_missing_coordinates_are_stored_for_review(self):
+        result=store_listing(self.db,listing(lat=None,lon=None,location=''),self.cfg,False)
+        self.assertEqual(result['status'],'review')
+        self.assertIn('brak współrzędnych',result['missing'])
+        self.assertEqual(self.db.execute('SELECT COUNT(*) FROM listings').fetchone()[0],1)
     def test_reassessment_removes_historical_outside_listing(self):
         item=listing();store_listing(self.db,item,self.cfg,False)
         payload=json.loads(self.db.execute('SELECT payload FROM listings').fetchone()[0])
@@ -168,5 +181,16 @@ class EngineTests(unittest.TestCase):
             self.assertIn('const PAGE_SIZE=50',text);self.assertIn('gallery-next',text)
             self.assertIn('openstreetmap.org/export/embed.html',api['items'][0]['map']['embed'])
             self.assertEqual(api['count'],1)
+    def test_report_keeps_missing_location_and_hides_syndic_without_full_ownership(self):
+        missing=listing(url='https://www.otodom.pl/pl/oferta/dom-IDmissing',lat=None,lon=None,location='')
+        share=listing(url='https://www.otodom.pl/pl/oferta/dom-IDshare',description='Syndyk sprzedaje udział 1/2 w nieruchomości.')
+        store_listing(self.db,missing,self.cfg,False);store_listing(self.db,share,self.cfg,False)
+        with tempfile.TemporaryDirectory() as d:
+            p=Path(d)/'report.html';report(self.db,p,config=self.cfg)
+            api=json.loads((Path(d)/'api'/'report-listings.json').read_text())
+            self.assertEqual(api['count'],1)
+            self.assertEqual(api['items'][0]['url'],missing.url)
+            self.assertEqual(api['items'][0]['distance'],'Brak współrzędnych')
+            self.assertEqual(api['items'][0]['status'],'review')
 
 if __name__=='__main__':unittest.main()

@@ -86,6 +86,18 @@ def analyze_text(listing):
     return {'credit': credit, 'condition': condition}
 
 
+def syndic_ownership(listing):
+    """Classify syndic listings; only an explicit whole-property sale is accepted."""
+    text = fold(listing.title + ' ' + listing.description)
+    if not re.search(r'\bsyndyk\w*', text):
+        return ''
+    if re.search(r'pelna\s+wlasnosc|100\s*%\s*(?:prawa\s+)?wlasnosci|(?:cala|calosc)\s+nieruchomosci|nieruchomosc\s+w\s+calosci|prawo\s+wlasnosci\s+calej\s+nieruchomosci', text):
+        return 'full'
+    if re.search(r'\budzial\w*|\bulamkow\w*|\b\d+\s*/\s*\d+\b', text):
+        return 'share'
+    return 'unknown'
+
+
 def assess(listing, config):
     missing, rejected = [], []
     if listing.property_type == 'unknown': missing.append('niepotwierdzony typ nieruchomości')
@@ -129,7 +141,12 @@ def assess(listing, config):
         missing.append('działka rekreacyjna — sprawdź prawo do nieruchomości')
     if re.search(r'\bdom(?:y|ow|ki|ek)? modulow|\bdom(?:y|ow|ki|ek)? mobiln|na (?:wlasnej )?dzialce klienta|sprzedaz gotowych domkow|gotow.{0,20}do przeniesienia|konstrukcj.{0,30}do samodzielnego montazu', text):
         missing.append('oferta budynku bez potwierdzonej działki')
-    if re.search(r'udzial(?:u)?\s+(?:\d+/\d+|w wysokosci\s+\d+/\d+|w nieruchomosci|w prawie)', text):
+    ownership = syndic_ownership(listing)
+    if ownership == 'share':
+        rejected.append('syndyk — sprzedaż udziału zamiast pełnej własności')
+    elif ownership == 'unknown':
+        rejected.append('syndyk — brak potwierdzenia pełnej własności')
+    elif re.search(r'udzial(?:u)?\s+(?:\d+/\d+|w wysokosci\s+\d+/\d+|w nieruchomosci|w prawie)', text):
         missing.append('sprzedaż udziału — sprawdź zakres własności')
     if re.search(r'\bdo zamiany\b|\boferujemy do zamiany\b', text):
         missing.append('oferta zamiany — sprawdź warunki sprzedaży')
