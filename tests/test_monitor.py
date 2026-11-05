@@ -103,6 +103,18 @@ class EngineTests(unittest.TestCase):
     def test_history(self):
         store_listing(self.db,listing(),self.cfg,False);store_listing(self.db,listing(price=800000),self.cfg,False)
         self.assertEqual(self.db.execute('SELECT COUNT(*) FROM history').fetchone()[0],2)
+    def test_outside_radius_is_not_stored(self):
+        result=store_listing(self.db,listing(lat=48.0,lon=14.0),self.cfg,False)
+        self.assertIn('poza promieniem wszystkich miast',result['reasons'])
+        self.assertEqual(self.db.execute('SELECT COUNT(*) FROM listings').fetchone()[0],0)
+        self.assertEqual(self.db.execute('SELECT COUNT(*) FROM history').fetchone()[0],0)
+    def test_reassessment_removes_historical_outside_listing(self):
+        item=listing();store_listing(self.db,item,self.cfg,False)
+        payload=json.loads(self.db.execute('SELECT payload FROM listings').fetchone()[0])
+        payload.update(lat=48.0,lon=14.0)
+        self.db.execute('UPDATE listings SET payload=?',(json.dumps(payload),));self.db.commit()
+        reassess_all(self.db,self.cfg)
+        self.assertEqual(self.db.execute('SELECT COUNT(*) FROM listings').fetchone()[0],0)
     def test_reassess_historical_rows(self):
         store_listing(self.db,listing(description='Zwykły dom.'),self.cfg,False)
         payload=self.db.execute('SELECT payload FROM listings').fetchone()[0]

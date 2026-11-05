@@ -60,6 +60,8 @@ def render(db, path, include_analysis=False, config=None):
     for key, payload, assessment, first_seen, last_seen in rows:
         item = json.loads(payload)
         result = json.loads(assessment)
+        if 'poza promieniem wszystkich miast' in result.get('reasons', []):
+            continue
         near = result.get('nearest') or {}
         city = near.get('city') or ''
         if city:
@@ -154,7 +156,7 @@ table{{border-collapse:collapse;width:100%;font-size:.82rem}}td,th{{border-botto
 </section>
 <div class="sortbar"><strong id="count" aria-live="polite"></strong><label>Sortowanie <select id="sort"><option value="recent">Ostatnio widziane</option><option value="price">Najtańsze</option><option value="distance">Najbliżej miasta</option></select></label></div>
 <main id="offers">{''.join(cards)}</main><p id="empty" class="hidden">Brak ogłoszeń spełniających te filtry. Zmień filtry lub wybierz „Wszystkie zapisane”.</p><button id="more" class="hidden" type="button">Pokaż więcej</button>
-<section class="health"><h2>Stan źródeł</h2><p class="meta">Wyniki mogą być niepełne: portal może ograniczyć dostęp lub nie pokazać wszystkich ofert w promieniu 15 km. Status „ok” potwierdza tylko wykonanie danej próby skanu.</p>
+<section class="health"><h2>Stan źródeł</h2><p class="meta">Wyniki mogą być niepełne: portal może ograniczyć dostęp lub nie pokazać wszystkich ofert w skonfigurowanym promieniu. Status „ok” potwierdza tylko wykonanie danej próby skanu.</p>
 <details><summary>Historia skanów ({len(scans)})</summary><div class="table-wrap"><table><thead><tr><th>Czas</th><th>Źródło</th><th>Status</th><th>Odkryte/odczytane</th><th>Błędy</th></tr></thead><tbody>{scan_rows}</tbody></table></div></details></section>
 <script>
 const PAGE_SIZE=50;const cards=[...document.querySelectorAll('.offer')];let limit=PAGE_SIZE;

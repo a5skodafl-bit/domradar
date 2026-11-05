@@ -108,9 +108,21 @@ def body_for(listing,result,include_analysis=False):
     return base
 
 
+def outside_all_cities(result):
+    return 'poza promieniem wszystkich miast' in result.get('reasons', [])
+
+
+def delete_listing(db,key):
+    db.execute('DELETE FROM history WHERE key=?',(key,))
+    db.execute('DELETE FROM outbox WHERE key=?',(key,))
+    db.execute('DELETE FROM listings WHERE key=?',(key,))
+
+
 
 def store_listing(db,listing,cfg,notify):
     listing.url=canonical(listing.url);result=assess(listing,cfg);now=time.time()
+    if outside_all_cities(result):
+        delete_listing(db,listing.key);db.commit();return result
     old=db.execute('SELECT payload FROM listings WHERE key=?',(listing.key,)).fetchone()
     old_data=json.loads(old[0]) if old else None
     if not old_data or (old_data.get('price'),old_data.get('currency'))!=(listing.price,listing.currency):
@@ -125,13 +137,16 @@ def store_listing(db,listing,cfg,notify):
 
 def reassess_all(db,cfg):
     """Apply current filters to historical rows without requiring a fresh portal hit."""
-    updates=[]
+    updates=[];deletes=[]
     for key,payload in db.execute('SELECT key,payload FROM listings'):
         listing=Listing(**json.loads(payload))
-        updates.append((json.dumps(assess(listing,cfg),ensure_ascii=False),key))
+        result=assess(listing,cfg)
+        if outside_all_cities(result):deletes.append(key)
+        else:updates.append((json.dumps(result,ensure_ascii=False),key))
     db.executemany('UPDATE listings SET assessment=? WHERE key=?',updates)
+    for key in deletes:delete_listing(db,key)
     db.commit()
-    return len(updates)
+    return len(updates)+len(deletes)
 
 
 def scan(db,cfg,client=None):

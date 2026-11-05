@@ -1,76 +1,76 @@
 {
   "price_min": 0,
   "price_max": 700000,
-  "radius_km": 15,
+  "radius_km": 20,
   "cities": [
     {
       "name": "Warszawa",
       "lat": 52.2297,
       "lon": 21.0122,
-      "radius_km": 15,
+      "radius_km": 20,
       "price_max": 700000
     },
     {
       "name": "Kraków",
       "lat": 50.0647,
       "lon": 19.945,
-      "radius_km": 15,
+      "radius_km": 20,
       "price_max": 500000
     },
     {
       "name": "Wrocław",
       "lat": 51.1079,
       "lon": 17.0385,
-      "radius_km": 15,
+      "radius_km": 20,
       "price_max": 400000
     },
     {
       "name": "Łódź",
       "lat": 51.7592,
       "lon": 19.456,
-      "radius_km": 15,
+      "radius_km": 20,
       "price_max": 300000
     },
     {
       "name": "Poznań",
       "lat": 52.4064,
       "lon": 16.9252,
-      "radius_km": 15,
+      "radius_km": 20,
       "price_max": 300000
     },
     {
       "name": "Gdańsk",
       "lat": 54.352,
       "lon": 18.6466,
-      "radius_km": 15,
+      "radius_km": 20,
       "price_max": 300000
     },
     {
       "name": "Szczecin",
       "lat": 53.4285,
       "lon": 14.5528,
-      "radius_km": 15,
+      "radius_km": 20,
       "price_max": 300000
     },
     {
       "name": "Lublin",
       "lat": 51.2465,
       "lon": 22.5684,
-      "radius_km": 15,
+      "radius_km": 20,
       "price_max": 400000
     },
     {
       "name": "Bydgoszcz",
       "lat": 53.1235,
       "lon": 18.0076,
-      "radius_km": 15,
+      "radius_km": 20,
       "price_max": 300000
     },
     {
       "name": "Białystok",
       "lat": 53.1325,
       "lon": 23.1688,
-      "radius_km": 15,
+      "radius_km": 20,
       "price_max": 300000
     }
   ],
@@ -89,32 +89,32 @@
       "id": "otodom",
       "enabled": true,
       "search_urls": [
-        "https://www.otodom.pl/pl/wyniki/sprzedaz/dom/mazowieckie/warszawa/warszawa/warszawa?distanceRadius=15&priceMax=700000",
-        "https://www.otodom.pl/pl/wyniki/sprzedaz/dom/malopolskie/krakow/krakow/krakow?distanceRadius=15&priceMax=500000",
-        "https://www.otodom.pl/pl/wyniki/sprzedaz/dom/dolnoslaskie/wroclaw/wroclaw/wroclaw?distanceRadius=15&priceMax=400000",
-        "https://www.otodom.pl/pl/wyniki/sprzedaz/dom/lodzkie/lodz/lodz/lodz?distanceRadius=15&priceMax=300000",
-        "https://www.otodom.pl/pl/wyniki/sprzedaz/dom/wielkopolskie/poznan/poznan/poznan?distanceRadius=15&priceMax=300000",
-        "https://www.otodom.pl/pl/wyniki/sprzedaz/dom/pomorskie/gdansk/gdansk/gdansk?distanceRadius=15&priceMax=300000",
-        "https://www.otodom.pl/pl/wyniki/sprzedaz/dom/zachodniopomorskie/szczecin/szczecin/szczecin?distanceRadius=15&priceMax=300000",
-        "https://www.otodom.pl/pl/wyniki/sprzedaz/dom/lubelskie/lublin/lublin/lublin?distanceRadius=15&priceMax=400000",
-        "https://www.otodom.pl/pl/wyniki/sprzedaz/dom/kujawsko--pomorskie/bydgoszcz/bydgoszcz/bydgoszcz?distanceRadius=15&priceMax=300000",
-        "https://www.otodom.pl/pl/wyniki/sprzedaz/dom/podlaskie/bialystok/bialystok/bialystok?distanceRadius=15&priceMax=300000"
+        "https://www.otodom.pl/pl/wyniki/sprzedaz/dom/mazowieckie/warszawa/warszawa/warszawa?distanceRadius=20&priceMax=700000",
+        "https://www.otodom.pl/pl/wyniki/sprzedaz/dom/malopolskie/krakow/krakow/krakow?distanceRadius=20&priceMax=500000",
+        "https://www.otodom.pl/pl/wyniki/sprzedaz/dom/dolnoslaskie/wroclaw/wroclaw/wroclaw?distanceRadius=20&priceMax=400000",
+        "https://www.otodom.pl/pl/wyniki/sprzedaz/dom/lodzkie/lodz/lodz/lodz?distanceRadius=20&priceMax=300000",
+        "https://www.otodom.pl/pl/wyniki/sprzedaz/dom/wielkopolskie/poznan/poznan/poznan?distanceRadius=20&priceMax=300000",
+        "https://www.otodom.pl/pl/wyniki/sprzedaz/dom/pomorskie/gdansk/gdansk/gdansk?distanceRadius=20&priceMax=300000",
+        "https://www.otodom.pl/pl/wyniki/sprzedaz/dom/zachodniopomorskie/szczecin/szczecin/szczecin?distanceRadius=20&priceMax=300000",
+        "https://www.otodom.pl/pl/wyniki/sprzedaz/dom/lubelskie/lublin/lublin/lublin?distanceRadius=20&priceMax=400000",
+        "https://www.otodom.pl/pl/wyniki/sprzedaz/dom/kujawsko--pomorskie/bydgoszcz/bydgoszcz/bydgoszcz?distanceRadius=20&priceMax=300000",
+        "https://www.otodom.pl/pl/wyniki/sprzedaz/dom/podlaskie/bialystok/bialystok/bialystok?distanceRadius=20&priceMax=300000"
       ]
     },
     {
       "id": "olx",
       "enabled": true,
       "search_urls": [
-        "https://www.olx.pl/nieruchomosci/domy/sprzedaz/warszawa/?search%5Bdist%5D=15&search%5Bfilter_float_price:to%5D=700000",
-        "https://www.olx.pl/nieruchomosci/domy/sprzedaz/krakow/?search%5Bdist%5D=15&search%5Bfilter_float_price:to%5D=500000",
-        "https://www.olx.pl/nieruchomosci/domy/sprzedaz/wroclaw/?search%5Bdist%5D=15&search%5Bfilter_float_price:to%5D=400000",
-        "https://www.olx.pl/nieruchomosci/domy/sprzedaz/lodz/?search%5Bdist%5D=15&search%5Bfilter_float_price:to%5D=300000",
-        "https://www.olx.pl/nieruchomosci/domy/sprzedaz/poznan/?search%5Bdist%5D=15&search%5Bfilter_float_price:to%5D=300000",
-        "https://www.olx.pl/nieruchomosci/domy/sprzedaz/gdansk/?search%5Bdist%5D=15&search%5Bfilter_float_price:to%5D=300000",
-        "https://www.olx.pl/nieruchomosci/domy/sprzedaz/szczecin/?search%5Bdist%5D=15&search%5Bfilter_float_price:to%5D=300000",
-        "https://www.olx.pl/nieruchomosci/domy/sprzedaz/lublin/?search%5Bdist%5D=15&search%5Bfilter_float_price:to%5D=400000",
-        "https://www.olx.pl/nieruchomosci/domy/sprzedaz/bydgoszcz/?search%5Bdist%5D=15&search%5Bfilter_float_price:to%5D=300000",
-        "https://www.olx.pl/nieruchomosci/domy/sprzedaz/bialystok/?search%5Bdist%5D=15&search%5Bfilter_float_price:to%5D=300000"
+        "https://www.olx.pl/nieruchomosci/domy/sprzedaz/warszawa/?search%5Bdist%5D=20&search%5Bfilter_float_price:to%5D=700000",
+        "https://www.olx.pl/nieruchomosci/domy/sprzedaz/krakow/?search%5Bdist%5D=20&search%5Bfilter_float_price:to%5D=500000",
+        "https://www.olx.pl/nieruchomosci/domy/sprzedaz/wroclaw/?search%5Bdist%5D=20&search%5Bfilter_float_price:to%5D=400000",
+        "https://www.olx.pl/nieruchomosci/domy/sprzedaz/lodz/?search%5Bdist%5D=20&search%5Bfilter_float_price:to%5D=300000",
+        "https://www.olx.pl/nieruchomosci/domy/sprzedaz/poznan/?search%5Bdist%5D=20&search%5Bfilter_float_price:to%5D=300000",
+        "https://www.olx.pl/nieruchomosci/domy/sprzedaz/gdansk/?search%5Bdist%5D=20&search%5Bfilter_float_price:to%5D=300000",
+        "https://www.olx.pl/nieruchomosci/domy/sprzedaz/szczecin/?search%5Bdist%5D=20&search%5Bfilter_float_price:to%5D=300000",
+        "https://www.olx.pl/nieruchomosci/domy/sprzedaz/lublin/?search%5Bdist%5D=20&search%5Bfilter_float_price:to%5D=400000",
+        "https://www.olx.pl/nieruchomosci/domy/sprzedaz/bydgoszcz/?search%5Bdist%5D=20&search%5Bfilter_float_price:to%5D=300000",
+        "https://www.olx.pl/nieruchomosci/domy/sprzedaz/bialystok/?search%5Bdist%5D=20&search%5Bfilter_float_price:to%5D=300000"
       ]
     },
     {
@@ -153,16 +153,16 @@
       "id": "nieruchomosci-online",
       "enabled": true,
       "search_urls": [
-        "https://warszawa.nieruchomosci-online.pl/szukaj.html?3,dom,sprzedaz,,Warszawa,,,15,-700000",
-        "https://krakow.nieruchomosci-online.pl/szukaj.html?3,dom,sprzedaz,,Krak%C3%B3w,,,15,-500000",
-        "https://wroclaw.nieruchomosci-online.pl/szukaj.html?3,dom,sprzedaz,,Wroc%C5%82aw,,,15,-400000",
-        "https://lodz.nieruchomosci-online.pl/szukaj.html?3,dom,sprzedaz,,%C5%81%C3%B3d%C5%BA,,,15,-300000",
-        "https://poznan.nieruchomosci-online.pl/szukaj.html?3,dom,sprzedaz,,Pozna%C5%84,,,15,-300000",
-        "https://gdansk.nieruchomosci-online.pl/szukaj.html?3,dom,sprzedaz,,Gda%C5%84sk,,,15,-300000",
-        "https://szczecin.nieruchomosci-online.pl/szukaj.html?3,dom,sprzedaz,,Szczecin,,,15,-300000",
-        "https://lublin.nieruchomosci-online.pl/szukaj.html?3,dom,sprzedaz,,Lublin,,,15,-400000",
-        "https://bydgoszcz.nieruchomosci-online.pl/szukaj.html?3,dom,sprzedaz,,Bydgoszcz,,,15,-300000",
-        "https://bialystok.nieruchomosci-online.pl/szukaj.html?3,dom,sprzedaz,,Bia%C5%82ystok,,,15,-300000"
+        "https://warszawa.nieruchomosci-online.pl/szukaj.html?3,dom,sprzedaz,,Warszawa,,,20,-700000",
+        "https://krakow.nieruchomosci-online.pl/szukaj.html?3,dom,sprzedaz,,Krak%C3%B3w,,,20,-500000",
+        "https://wroclaw.nieruchomosci-online.pl/szukaj.html?3,dom,sprzedaz,,Wroc%C5%82aw,,,20,-400000",
+        "https://lodz.nieruchomosci-online.pl/szukaj.html?3,dom,sprzedaz,,%C5%81%C3%B3d%C5%BA,,,20,-300000",
+        "https://poznan.nieruchomosci-online.pl/szukaj.html?3,dom,sprzedaz,,Pozna%C5%84,,,20,-300000",
+        "https://gdansk.nieruchomosci-online.pl/szukaj.html?3,dom,sprzedaz,,Gda%C5%84sk,,,20,-300000",
+        "https://szczecin.nieruchomosci-online.pl/szukaj.html?3,dom,sprzedaz,,Szczecin,,,20,-300000",
+        "https://lublin.nieruchomosci-online.pl/szukaj.html?3,dom,sprzedaz,,Lublin,,,20,-400000",
+        "https://bydgoszcz.nieruchomosci-online.pl/szukaj.html?3,dom,sprzedaz,,Bydgoszcz,,,20,-300000",
+        "https://bialystok.nieruchomosci-online.pl/szukaj.html?3,dom,sprzedaz,,Bia%C5%82ystok,,,20,-300000"
       ]
     },
     {
