@@ -48,6 +48,7 @@ class Listing:
     condition: str = ''
     evidence: str = ''
     image_url: str = ''
+    image_urls: list[str] | None = None
 
     def dict(self): return asdict(self)
 
@@ -92,7 +93,6 @@ def assess(listing, config):
     if listing.transaction == 'unknown': missing.append('niepotwierdzona sprzedaż')
     elif listing.transaction != 'sale': rejected.append('to nie jest sprzedaż')
     if listing.price is None: missing.append('brak ceny')
-    elif not config['price_min'] <= listing.price <= config['price_max']: rejected.append('cena poza budżetem')
     if listing.currency.upper() not in {'PLN', 'ZŁ', 'ZL'}: missing.append('brak potwierdzenia ceny w PLN')
     if config.get('area_min', 0) and listing.area_m2 is None: missing.append('brak powierzchni')
     elif listing.area_m2 is not None and listing.area_m2 < config.get('area_min', 0): rejected.append('za mała powierzchnia')
@@ -107,12 +107,19 @@ def assess(listing, config):
             d = distance(listing.lat, listing.lon, city['lat'], city['lon'])
             radius = city.get('radius_km', config['radius_km'])
             uncertainty = (listing.geo_radius_m or 0) / 1000
-            distances.append({'city': city['name'], 'km': round(d, 2), 'limit_km': radius, 'within': d <= radius, 'uncertainty_km': uncertainty})
+            distances.append({'city': city['name'], 'km': round(d, 2), 'limit_km': radius,
+                              'price_max': city.get('price_max', config['price_max']),
+                              'within': d <= radius, 'uncertainty_km': uncertainty})
         if not any(x['within'] for x in distances):
             if any(x['km'] - x['uncertainty_km'] <= x['limit_km'] for x in distances): missing.append('niepewna lokalizacja na granicy promienia')
             else: rejected.append('poza promieniem wszystkich miast')
         if listing.geo_accuracy != 'exact' and not config.get('allow_approximate_geo', False): missing.append('lokalizacja przybliżona lub o nieznanej dokładności')
         elif any(x['within'] for x in distances) and not any(x['km'] + x['uncertainty_km'] <= x['limit_km'] for x in distances): missing.append('obszar niepewności przekracza promień')
+    if listing.price is not None:
+        nearby_budgets = [x['price_max'] for x in distances if x['within']]
+        applicable_max = max(nearby_budgets, default=config['price_max'])
+        if not config['price_min'] <= listing.price <= applicable_max:
+            rejected.append('cena poza budżetem')
     text = fold(listing.title + ' ' + listing.description)
     # The portal can label a garden plot, a house kit, or a fractional share as a house.
     # Keep these searchable, but do not present them as confirmed purchases of a house.
@@ -133,7 +140,9 @@ def assess(listing, config):
     nearest = min(distances, key=lambda x:x['km']) if distances else None
     # Transparent fit score, not a valuation or "bargain probability".
     parts = []
-    if listing.price is not None and config['price_min'] <= listing.price <= config['price_max']:
+    nearby_budgets = [x['price_max'] for x in distances if x['within']]
+    applicable_max = max(nearby_budgets, default=config['price_max'])
+    if listing.price is not None and config['price_min'] <= listing.price <= applicable_max:
         parts.append(('cena w budżecie', 40))
     if any(x['within'] for x in distances): parts.append(('punkt lokalizacji w promieniu miasta', 30))
     if listing.property_type == 'house' and listing.transaction == 'sale': parts.append(('potwierdzony dom na sprzedaż', 20))

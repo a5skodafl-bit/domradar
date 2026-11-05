@@ -32,6 +32,11 @@ class CoreTests(unittest.TestCase):
         r=assess(listing(lat=50.06,lon=19.94),c)
         self.assertEqual(r['status'],'match');self.assertEqual(r['nearest']['city'],'Kraków')
     def test_over_budget(self):self.assertEqual(assess(listing(price=1100000),config())['status'],'rejected')
+    def test_city_specific_budgets(self):
+        c=config();c['price_max']=700000;c['cities'][0]['price_max']=700000
+        c['cities'].append({'name':'Kraków','lat':50.0647,'lon':19.945,'radius_km':40,'price_max':500000})
+        self.assertEqual(assess(listing(price=650000),c)['status'],'match')
+        self.assertEqual(assess(listing(price=650000,lat=50.0647,lon=19.945),c)['status'],'rejected')
     def test_garden_plot_rejected_and_other_risks_require_review(self):
         self.assertEqual(assess(listing(description='Dom na działce ROD.'),config())['status'],'rejected')
         self.assertEqual(assess(listing(description='Dom całoroczny na działce R. O. D.'),config())['status'],'rejected')
@@ -58,6 +63,10 @@ class ParserTests(unittest.TestCase):
         self.assertEqual((x.area_m2,x.price,x.property_type,x.transaction),(130,850000,'house','sale'))
         self.assertEqual(x.lat,52.25)
         self.assertEqual(x.image_url,'https://img.example.org/dom.jpg')
+    def test_multiple_images(self):
+        x=parse_detail(schema(image=['https://img.example.org/one.jpg',{'large':'https://img.example.org/two.jpg'}]),'https://lento.pl/dom,123456.html','lento')
+        self.assertEqual(x.image_urls,['https://img.example.org/one.jpg','https://img.example.org/two.jpg'])
+        self.assertEqual(x.image_url,x.image_urls[0])
     def test_related_ad_not_taken(self):
         text=schema()+'<script type="application/ld+json">'+json.dumps({'@type':'Product','url':'https://lento.pl/inny,987654.html','name':'Inny dom','offers':{'price':1},'geo':{'latitude':1,'longitude':1}})+'</script>'
         x=parse_detail(text,'https://lento.pl/dom,123456.html','lento');self.assertEqual(x.price,850000)
@@ -97,7 +106,7 @@ class EngineTests(unittest.TestCase):
     def test_reassess_historical_rows(self):
         store_listing(self.db,listing(description='Zwykły dom.'),self.cfg,False)
         payload=self.db.execute('SELECT payload FROM listings').fetchone()[0]
-        data=json.loads(payload);data['description']='Dom na działce R. O. D.'
+        data=json.loads(payload);data['description']='Dom na działce R. O. D.';data.pop('image_urls')
         self.db.execute('UPDATE listings SET payload=?',(json.dumps(data),));self.db.commit()
         reassess_all(self.db,self.cfg)
         assessment=json.loads(self.db.execute('SELECT assessment FROM listings').fetchone()[0])
@@ -134,11 +143,13 @@ class EngineTests(unittest.TestCase):
         client=Fake();scan(self.db,cfg,client);client.fail=False;scan(self.db,cfg,client)
         self.assertEqual(self.db.execute('SELECT COUNT(*) FROM listings').fetchone()[0],1);self.assertEqual(self.db.execute('SELECT COUNT(*) FROM outbox').fetchone()[0],0)
     def test_html_escape(self):
-        store_listing(self.db,listing(title='<script>alert(1)</script>'),self.cfg,False)
+        store_listing(self.db,listing(title='<script>alert(1)</script>',image_url='https://img.example.org/one.jpg',image_urls=['https://img.example.org/one.jpg','https://img.example.org/two.jpg']),self.cfg,False)
         with tempfile.TemporaryDirectory() as d:
             p=Path(d)/'report.html';report(self.db,p);text=p.read_text()
             self.assertIn('&lt;script&gt;',text);self.assertNotIn('<script>alert(1)</script>',text)
             self.assertIn('Nie interesuje',text);self.assertIn('Obserwuj',text)
             self.assertIn('domradar-preferences-v1',text);self.assertIn('data-key=',text)
+            self.assertIn('const PAGE_SIZE=50',text);self.assertIn('gallery-next',text)
+            self.assertIn('openstreetmap.org/export/embed.html',text)
 
 if __name__=='__main__':unittest.main()

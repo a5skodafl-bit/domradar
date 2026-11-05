@@ -74,20 +74,34 @@ def types(obj):
     v=obj.get('@type',[]);return [x.rsplit('/',1)[-1] for x in ([v] if isinstance(v,str) else v)]
 
 
+def image_urls(value, base, limit=12):
+    """Return unique, safe public image URLs, keeping one best variant per photo."""
+    results=[]
+    def add(item):
+        if len(results)>=limit:return
+        if isinstance(item,list):
+            for child in item:add(child)
+            return
+        if isinstance(item,dict):
+            candidate=next((item.get(key) for key in
+                            ('contentUrl','original','large','medium','url','@id','small','thumbnail')
+                            if item.get(key)),None)
+            if candidate is not None:add(candidate)
+            else:
+                for child in item.values():add(child)
+            return
+        if not isinstance(item,str) or not item.strip():return
+        result=urljoin(base,item.strip());parsed=urlsplit(result)
+        if (parsed.scheme=='https' and parsed.hostname and not parsed.username and not parsed.password
+                and parsed.port in {None,443} and len(result)<=3000 and result not in results):
+            results.append(result)
+    add(value)
+    return results
+
+
 def image_url(value, base):
-    """Return one safe public image URL from JSON-LD or page metadata."""
-    if isinstance(value,list):
-        for item in value:
-            result=image_url(item,base)
-            if result:return result
-        return ''
-    if isinstance(value,dict):
-        value=(value.get('contentUrl') or value.get('url') or value.get('@id') or
-               value.get('large') or value.get('medium') or value.get('small') or value.get('thumbnail') or '')
-    if not isinstance(value,str) or not value.strip():return ''
-    result=urljoin(base,value.strip());parsed=urlsplit(result)
-    if parsed.scheme!='https' or not parsed.hostname or parsed.username or parsed.password or parsed.port not in {None,443}:return ''
-    return result if len(result)<=3000 else ''
+    """Backward-compatible helper returning the first safe public image URL."""
+    return next(iter(image_urls(value,base,1)),'')
 
 
 def classify(title, url, schema_types=()):
@@ -144,9 +158,11 @@ def parse_otodom(page, url, source):
         radius=number(geo.get('radius') if 'radius' in geo else (loc.get('mapDetails') or {}).get('radius',loc.get('radius')))
         address=loc.get('address') or {}
         names=[v.get('name','') if isinstance(v,dict) else str(v or '') for v in address.values()]
-        photo=image_url(ad.get('images') or ad.get('listingImages') or ad.get('image') or ad.get('photos'),url)
+        photos=image_urls(ad.get('images') or ad.get('listingImages') or ad.get('image') or ad.get('photos'),url)
+        photo=photos[0] if photos else ''
         price_attr=characteristics.get('price') or {}
         listing=Listing(source,url,clean(ad.get('title')),number(price.get('value') if isinstance(price,dict) else price) or number(t('Price')) or number(price_attr.get('value')),str(price.get('currency','') if isinstance(price,dict) else '') or str(price_attr.get('currency') or ''),number(ad.get('areaInSquareMeters')) or number(t('Area')) or number((characteristics.get('m') or {}).get('value')),number(geo.get('latitude')),number(geo.get('longitude')),', '.join(x for x in names if x),'approximate' if radius else 'unknown',radius,kind,tx,clean(ad.get('description')),str(ad.get('dateCreated') or ad.get('createdAt') or ''),str(t('Build_condition') or t('Construction_status') or ''),'Otodom __NEXT_DATA__.props.pageProps.ad',photo)
+        listing.image_urls=photos
         # Currency must be explicitly stated, not inferred from country/domain.
         if not listing.currency:listing.currency=str(t('Currency') or '')
         return listing
@@ -192,8 +208,10 @@ def parse_detail(text, url, source):
     if lat is not None and not (-90<=lat<=90):lat=None
     if lon is not None and not (-180<=lon<=180):lon=None
     if not title or (price is None and not desc):raise ValueError('Nie rozpoznano szczegółów oferty; możliwa blokada lub zmiana struktury.')
-    photo=image_url(item.get('image') or obj.get('image') or page.meta.get('og:image') or page.meta.get('twitter:image'),url)
+    photos=image_urls(item.get('image') or obj.get('image') or page.meta.get('og:image') or page.meta.get('twitter:image'),url)
+    photo=photos[0] if photos else ''
     result = Listing(source,url,title,price,str(currency),area,lat,lon,location,'unknown',None,kind,tx,desc,str(obj.get('datePosted') or obj.get('datePublished') or ''),'','JSON-LD / metadane HTML',photo)
+    result.image_urls=photos
     return enrich(result,page,text,objects)
 
 
@@ -248,6 +266,8 @@ def enrich(result,page,text,objects):
                 result.lat=number(geo.get('latitude'));result.lon=number(geo.get('longitude'))
                 result.location=', '.join(str(x) for x in [loc.get('location'),loc.get('street')] if isinstance(x,str))
                 result.evidence+=' + Nuxt: rekord o zgodnym URL'
+                photos=image_urls(ad.get('images') or ad.get('photos') or ad.get('image'),result.url)
+                if photos:result.image_url=photos[0];result.image_urls=photos
                 break
     elif source=='olx':
         for a,s in page.scripts:
@@ -269,6 +289,8 @@ def enrich(result,page,text,objects):
                     result.geo_radius_m=(number(mp['radius']) or 0)*1000
                 result.geo_accuracy='approximate' if result.geo_radius_m else 'unknown'
                 result.evidence+=' + OLX init config: zgodny identyfikator'
+                photos=image_urls(ad.get('photos') or ad.get('images') or ad.get('image'),result.url)
+                if photos:result.image_url=photos[0];result.image_urls=photos
             except (ValueError,TypeError):continue
     elif source=='adresowo':
         places=[o for o in objects if 'Place' in types(o) and o.get('geo')]

@@ -1,67 +1,77 @@
 {
   "price_min": 0,
-  "price_max": 300000,
+  "price_max": 700000,
   "radius_km": 15,
   "cities": [
     {
       "name": "Warszawa",
       "lat": 52.2297,
       "lon": 21.0122,
-      "radius_km": 15
+      "radius_km": 15,
+      "price_max": 700000
     },
     {
       "name": "Kraków",
       "lat": 50.0647,
       "lon": 19.945,
-      "radius_km": 15
+      "radius_km": 15,
+      "price_max": 500000
     },
     {
       "name": "Wrocław",
       "lat": 51.1079,
       "lon": 17.0385,
-      "radius_km": 15
+      "radius_km": 15,
+      "price_max": 400000
     },
     {
       "name": "Łódź",
       "lat": 51.7592,
       "lon": 19.456,
-      "radius_km": 15
+      "radius_km": 15,
+      "price_max": 300000
     },
     {
       "name": "Poznań",
       "lat": 52.4064,
       "lon": 16.9252,
-      "radius_km": 15
+      "radius_km": 15,
+      "price_max": 300000
     },
     {
       "name": "Gdańsk",
       "lat": 54.352,
       "lon": 18.6466,
-      "radius_km": 15
+      "radius_km": 15,
+      "price_max": 300000
     },
     {
       "name": "Szczecin",
       "lat": 53.4285,
       "lon": 14.5528,
-      "radius_km": 15
+      "radius_km": 15,
+      "price_max": 300000
     },
     {
       "name": "Lublin",
       "lat": 51.2465,
       "lon": 22.5684,
-      "radius_km": 15
+      "radius_km": 15,
+      "price_max": 400000
     },
     {
       "name": "Bydgoszcz",
       "lat": 53.1235,
       "lon": 18.0076,
-      "radius_km": 15
+      "radius_km": 15,
+      "price_max": 300000
     },
     {
       "name": "Białystok",
       "lat": 53.1325,
       "lon": 23.1688,
-      "radius_km": 15
+      "radius_km": 15,
+      "price_max": 300000
     }
   ],
   "area_min": 0,
@@ -79,14 +89,14 @@
       "id": "otodom",
       "enabled": true,
       "search_urls": [
-        "https://www.otodom.pl/pl/wyniki/sprzedaz/dom/mazowieckie/warszawa/warszawa/warszawa?distanceRadius=15&priceMax=300000",
-        "https://www.otodom.pl/pl/wyniki/sprzedaz/dom/malopolskie/krakow/krakow/krakow?distanceRadius=15&priceMax=300000",
-        "https://www.otodom.pl/pl/wyniki/sprzedaz/dom/dolnoslaskie/wroclaw/wroclaw/wroclaw?distanceRadius=15&priceMax=300000",
+        "https://www.otodom.pl/pl/wyniki/sprzedaz/dom/mazowieckie/warszawa/warszawa/warszawa?distanceRadius=15&priceMax=700000",
+        "https://www.otodom.pl/pl/wyniki/sprzedaz/dom/malopolskie/krakow/krakow/krakow?distanceRadius=15&priceMax=500000",
+        "https://www.otodom.pl/pl/wyniki/sprzedaz/dom/dolnoslaskie/wroclaw/wroclaw/wroclaw?distanceRadius=15&priceMax=400000",
         "https://www.otodom.pl/pl/wyniki/sprzedaz/dom/lodzkie/lodz/lodz/lodz?distanceRadius=15&priceMax=300000",
         "https://www.otodom.pl/pl/wyniki/sprzedaz/dom/wielkopolskie/poznan/poznan/poznan?distanceRadius=15&priceMax=300000",
         "https://www.otodom.pl/pl/wyniki/sprzedaz/dom/pomorskie/gdansk/gdansk/gdansk?distanceRadius=15&priceMax=300000",
         "https://www.otodom.pl/pl/wyniki/sprzedaz/dom/zachodniopomorskie/szczecin/szczecin/szczecin?distanceRadius=15&priceMax=300000",
-        "https://www.otodom.pl/pl/wyniki/sprzedaz/dom/lubelskie/lublin/lublin/lublin?distanceRadius=15&priceMax=300000",
+        "https://www.otodom.pl/pl/wyniki/sprzedaz/dom/lubelskie/lublin/lublin/lublin?distanceRadius=15&priceMax=400000",
         "https://www.otodom.pl/pl/wyniki/sprzedaz/dom/kujawsko--pomorskie/bydgoszcz/bydgoszcz/bydgoszcz?distanceRadius=15&priceMax=300000",
         "https://www.otodom.pl/pl/wyniki/sprzedaz/dom/podlaskie/bialystok/bialystok/bialystok?distanceRadius=15&priceMax=300000"
       ]
@@ -95,14 +105,14 @@
       "id": "olx",
       "enabled": true,
       "search_urls": [
-        "https://www.olx.pl/nieruchomosci/domy/sprzedaz/warszawa/?search%5Bdist%5D=15&search%5Bfilter_float_price:to%5D=300000",
-        "https://www.olx.pl/nieruchomosci/domy/sprzedaz/krakow/?search%5Bdist%5D=15&search%5Bfilter_float_price:to%5D=300000",
-        "https://www.olx.pl/nieruchomosci/domy/sprzedaz/wroclaw/?search%5Bdist%5D=15&search%5Bfilter_float_price:to%5D=300000",
+        "https://www.olx.pl/nieruchomosci/domy/sprzedaz/warszawa/?search%5Bdist%5D=15&search%5Bfilter_float_price:to%5D=700000",
+        "https://www.olx.pl/nieruchomosci/domy/sprzedaz/krakow/?search%5Bdist%5D=15&search%5Bfilter_float_price:to%5D=500000",
+        "https://www.olx.pl/nieruchomosci/domy/sprzedaz/wroclaw/?search%5Bdist%5D=15&search%5Bfilter_float_price:to%5D=400000",
         "https://www.olx.pl/nieruchomosci/domy/sprzedaz/lodz/?search%5Bdist%5D=15&search%5Bfilter_float_price:to%5D=300000",
         "https://www.olx.pl/nieruchomosci/domy/sprzedaz/poznan/?search%5Bdist%5D=15&search%5Bfilter_float_price:to%5D=300000",
         "https://www.olx.pl/nieruchomosci/domy/sprzedaz/gdansk/?search%5Bdist%5D=15&search%5Bfilter_float_price:to%5D=300000",
         "https://www.olx.pl/nieruchomosci/domy/sprzedaz/szczecin/?search%5Bdist%5D=15&search%5Bfilter_float_price:to%5D=300000",
-        "https://www.olx.pl/nieruchomosci/domy/sprzedaz/lublin/?search%5Bdist%5D=15&search%5Bfilter_float_price:to%5D=300000",
+        "https://www.olx.pl/nieruchomosci/domy/sprzedaz/lublin/?search%5Bdist%5D=15&search%5Bfilter_float_price:to%5D=400000",
         "https://www.olx.pl/nieruchomosci/domy/sprzedaz/bydgoszcz/?search%5Bdist%5D=15&search%5Bfilter_float_price:to%5D=300000",
         "https://www.olx.pl/nieruchomosci/domy/sprzedaz/bialystok/?search%5Bdist%5D=15&search%5Bfilter_float_price:to%5D=300000"
       ]
@@ -111,14 +121,14 @@
       "id": "morizon",
       "enabled": true,
       "search_urls": [
-        "https://www.morizon.pl/domy/warszawa/?ps%5Bprice_to%5D=300000",
-        "https://www.morizon.pl/domy/krakow/?ps%5Bprice_to%5D=300000",
-        "https://www.morizon.pl/domy/wroclaw/?ps%5Bprice_to%5D=300000",
+        "https://www.morizon.pl/domy/warszawa/?ps%5Bprice_to%5D=700000",
+        "https://www.morizon.pl/domy/krakow/?ps%5Bprice_to%5D=500000",
+        "https://www.morizon.pl/domy/wroclaw/?ps%5Bprice_to%5D=400000",
         "https://www.morizon.pl/domy/lodz/?ps%5Bprice_to%5D=300000",
         "https://www.morizon.pl/domy/poznan/?ps%5Bprice_to%5D=300000",
         "https://www.morizon.pl/domy/gdansk/?ps%5Bprice_to%5D=300000",
         "https://www.morizon.pl/domy/szczecin/?ps%5Bprice_to%5D=300000",
-        "https://www.morizon.pl/domy/lublin/?ps%5Bprice_to%5D=300000",
+        "https://www.morizon.pl/domy/lublin/?ps%5Bprice_to%5D=400000",
         "https://www.morizon.pl/domy/bydgoszcz/?ps%5Bprice_to%5D=300000",
         "https://www.morizon.pl/domy/bialystok/?ps%5Bprice_to%5D=300000"
       ]
@@ -127,14 +137,14 @@
       "id": "gratka",
       "enabled": true,
       "search_urls": [
-        "https://gratka.pl/nieruchomosci/domy/warszawa?priceTo=300000",
-        "https://gratka.pl/nieruchomosci/domy/krakow?priceTo=300000",
-        "https://gratka.pl/nieruchomosci/domy/wroclaw?priceTo=300000",
+        "https://gratka.pl/nieruchomosci/domy/warszawa?priceTo=700000",
+        "https://gratka.pl/nieruchomosci/domy/krakow?priceTo=500000",
+        "https://gratka.pl/nieruchomosci/domy/wroclaw?priceTo=400000",
         "https://gratka.pl/nieruchomosci/domy/lodz?priceTo=300000",
         "https://gratka.pl/nieruchomosci/domy/poznan?priceTo=300000",
         "https://gratka.pl/nieruchomosci/domy/gdansk?priceTo=300000",
         "https://gratka.pl/nieruchomosci/domy/szczecin?priceTo=300000",
-        "https://gratka.pl/nieruchomosci/domy/lublin?priceTo=300000",
+        "https://gratka.pl/nieruchomosci/domy/lublin?priceTo=400000",
         "https://gratka.pl/nieruchomosci/domy/bydgoszcz?priceTo=300000",
         "https://gratka.pl/nieruchomosci/domy/bialystok?priceTo=300000"
       ]
@@ -143,14 +153,14 @@
       "id": "nieruchomosci-online",
       "enabled": true,
       "search_urls": [
-        "https://warszawa.nieruchomosci-online.pl/szukaj.html?3,dom,sprzedaz,,Warszawa,,,15,-300000",
-        "https://krakow.nieruchomosci-online.pl/szukaj.html?3,dom,sprzedaz,,Krak%C3%B3w,,,15,-300000",
-        "https://wroclaw.nieruchomosci-online.pl/szukaj.html?3,dom,sprzedaz,,Wroc%C5%82aw,,,15,-300000",
+        "https://warszawa.nieruchomosci-online.pl/szukaj.html?3,dom,sprzedaz,,Warszawa,,,15,-700000",
+        "https://krakow.nieruchomosci-online.pl/szukaj.html?3,dom,sprzedaz,,Krak%C3%B3w,,,15,-500000",
+        "https://wroclaw.nieruchomosci-online.pl/szukaj.html?3,dom,sprzedaz,,Wroc%C5%82aw,,,15,-400000",
         "https://lodz.nieruchomosci-online.pl/szukaj.html?3,dom,sprzedaz,,%C5%81%C3%B3d%C5%BA,,,15,-300000",
         "https://poznan.nieruchomosci-online.pl/szukaj.html?3,dom,sprzedaz,,Pozna%C5%84,,,15,-300000",
         "https://gdansk.nieruchomosci-online.pl/szukaj.html?3,dom,sprzedaz,,Gda%C5%84sk,,,15,-300000",
         "https://szczecin.nieruchomosci-online.pl/szukaj.html?3,dom,sprzedaz,,Szczecin,,,15,-300000",
-        "https://lublin.nieruchomosci-online.pl/szukaj.html?3,dom,sprzedaz,,Lublin,,,15,-300000",
+        "https://lublin.nieruchomosci-online.pl/szukaj.html?3,dom,sprzedaz,,Lublin,,,15,-400000",
         "https://bydgoszcz.nieruchomosci-online.pl/szukaj.html?3,dom,sprzedaz,,Bydgoszcz,,,15,-300000",
         "https://bialystok.nieruchomosci-online.pl/szukaj.html?3,dom,sprzedaz,,Bia%C5%82ystok,,,15,-300000"
       ]
@@ -159,14 +169,14 @@
       "id": "domiporta",
       "enabled": true,
       "search_urls": [
-        "https://www.domiporta.pl/dom/sprzedam/mazowieckie/warszawa?Price.To=300000",
-        "https://www.domiporta.pl/dom/sprzedam/malopolskie/krakow?Price.To=300000",
-        "https://www.domiporta.pl/dom/sprzedam/dolnoslaskie/wroclaw?Price.To=300000",
+        "https://www.domiporta.pl/dom/sprzedam/mazowieckie/warszawa?Price.To=700000",
+        "https://www.domiporta.pl/dom/sprzedam/malopolskie/krakow?Price.To=500000",
+        "https://www.domiporta.pl/dom/sprzedam/dolnoslaskie/wroclaw?Price.To=400000",
         "https://www.domiporta.pl/dom/sprzedam/lodzkie/lodz?Price.To=300000",
         "https://www.domiporta.pl/dom/sprzedam/wielkopolskie/poznan?Price.To=300000",
         "https://www.domiporta.pl/dom/sprzedam/pomorskie/gdansk?Price.To=300000",
         "https://www.domiporta.pl/dom/sprzedam/zachodniopomorskie/szczecin?Price.To=300000",
-        "https://www.domiporta.pl/dom/sprzedam/lubelskie/lublin?Price.To=300000",
+        "https://www.domiporta.pl/dom/sprzedam/lubelskie/lublin?Price.To=400000",
         "https://www.domiporta.pl/dom/sprzedam/kujawsko-pomorskie/bydgoszcz?Price.To=300000",
         "https://www.domiporta.pl/dom/sprzedam/podlaskie/bialystok?Price.To=300000"
       ]
@@ -175,14 +185,14 @@
       "id": "adresowo",
       "enabled": true,
       "search_urls": [
-        "https://adresowo.pl/f/domy/warszawa/g20_p-30",
-        "https://adresowo.pl/f/domy/krakow/g20_p-30",
-        "https://adresowo.pl/f/domy/wroclaw/g20_p-30",
+        "https://adresowo.pl/f/domy/warszawa/g20_p-70",
+        "https://adresowo.pl/f/domy/krakow/g20_p-50",
+        "https://adresowo.pl/f/domy/wroclaw/g20_p-40",
         "https://adresowo.pl/f/domy/lodz/g20_p-30",
         "https://adresowo.pl/f/domy/poznan/g20_p-30",
         "https://adresowo.pl/f/domy/gdansk/g20_p-30",
         "https://adresowo.pl/f/domy/szczecin/g20_p-30",
-        "https://adresowo.pl/f/domy/lublin/g20_p-30",
+        "https://adresowo.pl/f/domy/lublin/g20_p-40",
         "https://adresowo.pl/f/domy/bydgoszcz/g20_p-30",
         "https://adresowo.pl/f/domy/bialystok/g20_p-30"
       ]
@@ -198,14 +208,14 @@
       "id": "lento",
       "enabled": true,
       "search_urls": [
-        "https://warszawa.lento.pl/nieruchomosci/domy/sprzedaz.html?price_to=300000",
-        "https://krakow.lento.pl/nieruchomosci/domy/sprzedaz.html?price_to=300000",
-        "https://wroclaw.lento.pl/nieruchomosci/domy/sprzedaz.html?price_to=300000",
+        "https://warszawa.lento.pl/nieruchomosci/domy/sprzedaz.html?price_to=700000",
+        "https://krakow.lento.pl/nieruchomosci/domy/sprzedaz.html?price_to=500000",
+        "https://wroclaw.lento.pl/nieruchomosci/domy/sprzedaz.html?price_to=400000",
         "https://lodz.lento.pl/nieruchomosci/domy/sprzedaz.html?price_to=300000",
         "https://poznan.lento.pl/nieruchomosci/domy/sprzedaz.html?price_to=300000",
         "https://gdansk.lento.pl/nieruchomosci/domy/sprzedaz.html?price_to=300000",
         "https://szczecin.lento.pl/nieruchomosci/domy/sprzedaz.html?price_to=300000",
-        "https://lublin.lento.pl/nieruchomosci/domy/sprzedaz.html?price_to=300000",
+        "https://lublin.lento.pl/nieruchomosci/domy/sprzedaz.html?price_to=400000",
         "https://bydgoszcz.lento.pl/nieruchomosci/domy/sprzedaz.html?price_to=300000",
         "https://bialystok.lento.pl/nieruchomosci/domy/sprzedaz.html?price_to=300000"
       ]

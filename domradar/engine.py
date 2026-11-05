@@ -83,6 +83,8 @@ def load_config(path):
         if not city.get('name'):raise ValueError('Miasto musi mieć nazwę')
         numeric(city.get('lat'),'city.lat',-90,90);numeric(city.get('lon'),'city.lon',-180,180)
         numeric(city.get('radius_km',c['radius_km']),'city.radius_km',0.1,1000)
+        numeric(city.get('price_max',c['price_max']),'city.price_max',1,1e12)
+        if city.get('price_max',c['price_max'])<c['price_min']:raise ValueError('city.price_max < price_min')
     if c.get('area_min',0)<0 or (c.get('area_max') is not None and c['area_max']<c.get('area_min',0)):raise ValueError('Nieprawidłowy zakres powierzchni')
     for s in c['sources']:
         if s['id'] not in DOMAINS:raise ValueError('Nieznany portal: '+s['id'])

@@ -16,12 +16,12 @@ python -m domradar demo
 
 Otwórz `data/demo.html`. Są tam **fikcyjne** oferty do prezentacji raportu, oddzielone od rzeczywistej bazy. Nic nie jest wysyłane.
 
-Gotowy profil wyszukiwania dla 10 największych miast (według ludności), promienia 15 km od centrum i ceny do 300 000 zł znajduje się w `config.top10.json`. Na docelowym serwerze skopiuj go do `config.json`. Nie ma limitu powierzchni. Aktywne są Otodom, OLX, Morizon, Gratka, Nieruchomości-Online, Domiporta, Adresowo i Lento, z osobnymi adresami wyszukiwania oraz filtrem ceny dla każdego miasta. Adresowo udostępnia promienie 10 lub 20 km, więc profil pobiera 20 km, a centralna ocena DomRadaru odrzuca pozycje poza 15 km. Oferty oznaczone jako ROD są odrzucane i ukrywane w domyślnym widoku. Strona pokazuje zdjęcie dostarczone przez portal, jeśli oferta je udostępnia, pozwala filtrować wyniki według źródła oraz ma przyciski „Obserwuj” i „Nie interesuje”. Te dwa osobiste stany są zapisywane w pamięci przeglądarki; odrzucone ręcznie oferty znikają z domyślnej listy, a obserwowane mają osobny filtr. Portalowe wyniki mogą być niepełne, a część ofert powtarza się między portalami. Niepotwierdzona dokładność współrzędnych powoduje status „Do sprawdzenia” także wtedy, gdy wyliczona odległość jest mniejsza niż 15 km.
+Gotowy profil wyszukiwania dla 10 największych miast (według ludności) i promienia 15 km od centrum znajduje się w `config.top10.json`. Limity wynoszą: Warszawa 700 000 zł, Kraków 500 000 zł, Wrocław i Lublin 400 000 zł, a pozostałe miasta 300 000 zł. Na docelowym serwerze skopiuj profil do `config.json`. Nie ma limitu powierzchni. Aktywne są Otodom, OLX, Morizon, Gratka, Nieruchomości-Online, Domiporta, Adresowo i Lento, z osobnymi adresami wyszukiwania oraz filtrem ceny dla każdego miasta. Adresowo udostępnia promienie 10 lub 20 km, więc profil pobiera 20 km, a centralna ocena DomRadaru odrzuca pozycje poza 15 km. Oferty oznaczone jako ROD są odrzucane i ukrywane w domyślnym widoku. Strona pokazuje do 12 zdjęć udostępnionych przez portal, pozwala przełączać je bez opuszczania listy i wyświetla mapę OpenStreetMap przy ofercie posiadającej współrzędne. Pozwala też filtrować wyniki według źródła oraz ma przyciski „Obserwuj” i „Nie interesuje”. Te dwa osobiste stany są zapisywane w pamięci przeglądarki; odrzucone ręcznie oferty znikają z domyślnej listy, a obserwowane mają osobny filtr. Portalowe wyniki mogą być niepełne, a część ofert powtarza się między portalami. Niepotwierdzona dokładność współrzędnych powoduje status „Do sprawdzenia” także wtedy, gdy wyliczona odległość jest mniejsza niż 15 km.
 
 Otwórz utworzony `config.json`. Przykładowy budżet 1 mln zł, 80 m² i Warszawa są wyłącznie wartościami startowymi, nie ustalonymi preferencjami użytkownika.
 
 1. Ustaw `price_min`, `price_max`, ewentualnie `area_min` i `area_max`.
-2. W `cities` wpisz miasta z ich współrzędnymi. Każde może mieć osobny `radius_km`. Warunek: oferta jest w promieniu **co najmniej jednego** z nich.
+2. W `cities` wpisz miasta z ich współrzędnymi. Każde może mieć osobny `radius_km` i `price_max`. Warunek: oferta jest w promieniu **co najmniej jednego** z nich i mieści się w budżecie tego miasta.
 3. Dla wybranych portali ustaw `enabled: true` i podmień `search_urls` na linki do wyszukiwań domów na sprzedaż w interesujących okolicach, najlepiej od najnowszych. Możesz dodać kilka linków na portal, np. osobny dla każdego miasta.
 4. Uruchom próbny skan:
 
@@ -37,8 +37,8 @@ Otwórz `data/raport.html`. To przeglądalny widok zapisanej bazy: wyszukuj ogł
 
 ```json
 "cities": [
-  {"name": "Warszawa", "lat": 52.2297, "lon": 21.0122, "radius_km": 40},
-  {"name": "Łódź", "lat": 51.7592, "lon": 19.4560, "radius_km": 30}
+  {"name": "Warszawa", "lat": 52.2297, "lon": 21.0122, "radius_km": 40, "price_max": 700000},
+  {"name": "Łódź", "lat": 51.7592, "lon": 19.4560, "radius_km": 30, "price_max": 300000}
 ]
 ```
 
