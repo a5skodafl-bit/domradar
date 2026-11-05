@@ -2,13 +2,6 @@ name: Scan offers and publish report
 
 on:
   workflow_dispatch:
-  push:
-    branches: [main]
-    paths:
-      - '.github/workflows/scan-and-publish.yml'
-      - 'requirements.txt'
-      - 'config.top10.json'
-      - 'domradar/**'
   schedule:
     - cron: '23 */3 * * *'
 
